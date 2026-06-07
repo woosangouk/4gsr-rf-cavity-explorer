@@ -7,6 +7,10 @@
 - Public URL: `https://woosangouk.github.io/4gsr-rf-cavity-explorer/`
 - Repository: `woosangouk/4gsr-rf-cavity-explorer`
 
+## GUI screenshot
+
+![4GSR RF Cavity Explorer V69 GUI overview](docs/screenshots/v69_gui_overview_1920.png)
+
 ## Purpose
 
 This project is an educational HTML simulator for the 4GSR N.C. cavity RF system. It is intended to visualize RF power budget, cavity count scenarios, coupling/Q relationships, tuner-detune behavior, HPRF margin, and parameter-to-result cause/effect relationships.

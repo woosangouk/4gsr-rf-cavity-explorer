@@ -1,5 +1,8 @@
 # v69 Ring & Timing Linked Calculation
 
+## GUI screenshot
+![4GSR RF Cavity Explorer V69 GUI overview](screenshots/v69_gui_overview_1920.png)
+
 ## Scope
 Only Ring & Timing calculation linkage was changed.
 
