@@ -5167,3 +5167,834 @@ body {
 .result-card [id^="res"] {
   cursor: help;
 }
+
+
+/* v54: footer version branding polish */
+.footer-version-wrap {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-left: auto !important;
+  padding-right: 8px !important;
+  white-space: nowrap !important;
+}
+
+.footer-version-wrap .version-badge {
+  display: inline-block !important;
+  transform: translateX(-8px) !important;
+}
+
+.footer-woo {
+  display: inline-block !important;
+  color: #93c5fd !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.06em !important;
+  font-size: 13px !important;
+  transform: translateX(-4px) !important;
+}
+
+
+/* v55: WOO creator signature polish */
+.footer-version-wrap {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin-left: auto !important;
+  padding-right: 8px !important;
+  white-space: nowrap !important;
+}
+
+.footer-version-wrap .version-badge {
+  display: inline-block !important;
+  transform: translateX(-10px) !important;
+}
+
+.footer-woo {
+  display: inline-block !important;
+  transform: translateX(-4px) rotate(-4deg) !important;
+  font-family: "Segoe Script", "Lucida Handwriting", "Brush Script MT", "Apple Chancery", cursive !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  font-style: italic !important;
+  line-height: 1 !important;
+  letter-spacing: 0.015em !important;
+  color: #bfdbfe !important;
+  background: linear-gradient(135deg, #f8fbff 0%, #93c5fd 48%, #60a5fa 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow:
+    0 0 10px rgba(96, 165, 250, 0.28),
+    0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  opacity: 0.96 !important;
+}
+
+.footer-woo::before {
+  content: "✦";
+  display: inline-block;
+  margin-right: 4px;
+  font-family: Arial, sans-serif;
+  font-size: 9px;
+  transform: translateY(-2px) rotate(12deg);
+  -webkit-text-fill-color: #93c5fd;
+  color: #93c5fd;
+  opacity: 0.9;
+}
+
+.footer-woo::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 1px;
+  margin-top: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(147,197,253,0), rgba(147,197,253,0.85), rgba(147,197,253,0));
+  transform: translateY(-1px);
+}
+
+
+/* v56: prevent WOO signature clipping in footer */
+.footer-bar {
+  min-height: 42px !important;
+  height: 42px !important;
+  overflow: visible !important;
+  align-items: center !important;
+}
+
+.footer-version-wrap {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  margin-left: auto !important;
+  padding: 8px 18px 8px 0 !important;
+  min-width: 148px !important;
+  height: 34px !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+}
+
+.footer-version-wrap .version-badge {
+  display: inline-block !important;
+  transform: translateX(-6px) !important;
+  line-height: 1 !important;
+  overflow: visible !important;
+}
+
+.footer-woo {
+  display: inline-block !important;
+  position: relative !important;
+  transform: translateX(-2px) rotate(-4deg) !important;
+  transform-origin: center !important;
+  padding: 3px 4px 5px 4px !important;
+  margin: 0 !important;
+  min-width: 64px !important;
+  overflow: visible !important;
+  font-family: "Segoe Script", "Lucida Handwriting", "Brush Script MT", "Apple Chancery", cursive !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  font-style: italic !important;
+  line-height: 1.05 !important;
+  letter-spacing: 0.015em !important;
+  color: #bfdbfe !important;
+  background: linear-gradient(135deg, #f8fbff 0%, #93c5fd 48%, #60a5fa 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  text-shadow:
+    0 0 10px rgba(96, 165, 250, 0.28),
+    0 1px 0 rgba(255, 255, 255, 0.08) !important;
+  opacity: 0.96 !important;
+}
+
+.footer-woo::before {
+  content: "✦";
+  display: inline-block;
+  margin-right: 4px;
+  font-family: Arial, sans-serif;
+  font-size: 9px;
+  transform: translateY(-2px) rotate(12deg);
+  -webkit-text-fill-color: #93c5fd;
+  color: #93c5fd;
+  opacity: 0.9;
+}
+
+.footer-woo::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  right: 2px;
+  bottom: 1px;
+  height: 1px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(147,197,253,0), rgba(147,197,253,0.85), rgba(147,197,253,0));
+}
+
+
+/* v57: Scenario selection result-change visualization */
+.scenario-change-notice {
+  display: none;
+  margin: 6px 0 8px;
+  padding: 7px 9px;
+  border-radius: 9px;
+  border: 1px solid rgba(96, 165, 250, 0.34);
+  background: rgba(219, 234, 254, 0.72);
+  color: #1e3a8a;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.scenario-change-notice.visible {
+  display: block;
+  animation: scenarioNoticePulse 1.1s ease 1;
+}
+
+@keyframes scenarioNoticePulse {
+  0% { background: rgba(251, 191, 36, 0.38); }
+  100% { background: rgba(219, 234, 254, 0.72); }
+}
+
+.result-row.scenario-changed,
+.result.scenario-changed,
+.calculated-row.scenario-changed {
+  border-radius: 8px;
+  background: rgba(255, 247, 237, 0.96) !important;
+  box-shadow: inset 4px 0 0 #f59e0b;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.result-row.scenario-changed dd,
+.result.scenario-changed strong,
+.calculated-row.scenario-changed .value,
+.scenario-changed [id^="res"] {
+  color: #b45309 !important;
+  font-weight: 900 !important;
+}
+
+.result-row.scenario-flash,
+.result.scenario-flash,
+.calculated-row.scenario-flash {
+  animation: scenarioResultFlash 1.35s ease 1;
+}
+
+@keyframes scenarioResultFlash {
+  0% {
+    transform: translateX(0);
+    background: rgba(255, 237, 213, 1);
+    box-shadow: inset 5px 0 0 #f97316, 0 0 0 1px rgba(249, 115, 22, 0.35);
+  }
+  45% {
+    transform: translateX(-2px);
+    background: rgba(255, 247, 237, 1);
+  }
+  100% {
+    transform: translateX(0);
+    background: rgba(255, 247, 237, 0.96);
+    box-shadow: inset 4px 0 0 #f59e0b;
+  }
+}
+
+
+/* v58: Scenario global changed-value visualization */
+.scenario-global-notice {
+  display: none;
+  position: fixed;
+  top: 72px;
+  right: 28px;
+  z-index: 2147482500;
+  max-width: 360px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(249, 115, 22, 0.42);
+  background: rgba(255, 247, 237, 0.96);
+  color: #9a3412;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.16);
+  font-size: 12px;
+  font-weight: 900;
+  pointer-events: none;
+}
+
+.scenario-global-notice.visible {
+  display: block;
+  animation: scenarioGlobalNoticePulse 1.2s ease 1;
+}
+
+@keyframes scenarioGlobalNoticePulse {
+  0% { transform: translateY(-4px); background: rgba(254, 215, 170, 1); }
+  100% { transform: translateY(0); background: rgba(255, 247, 237, 0.96); }
+}
+
+/* General highlight target */
+.scenario-affected {
+  position: relative;
+  border-radius: 10px !important;
+  outline: 2px solid rgba(245, 158, 11, 0.72) !important;
+  outline-offset: -2px !important;
+  background: rgba(255, 247, 237, 0.94) !important;
+  box-shadow:
+    inset 4px 0 0 #f59e0b,
+    0 0 0 1px rgba(245, 158, 11, 0.10) !important;
+  transition: background 0.18s ease, outline 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.scenario-affected-flash {
+  animation: scenarioAffectedFlash 1.2s ease 1;
+}
+
+@keyframes scenarioAffectedFlash {
+  0% {
+    background: rgba(255, 237, 213, 1) !important;
+    outline-color: rgba(249, 115, 22, 0.98) !important;
+    box-shadow:
+      inset 5px 0 0 #f97316,
+      0 0 0 2px rgba(249, 115, 22, 0.28),
+      0 10px 24px rgba(249, 115, 22, 0.14) !important;
+    transform: translateY(-1px);
+  }
+  100% {
+    background: rgba(255, 247, 237, 0.94) !important;
+    transform: translateY(0);
+  }
+}
+
+.scenario-affected::after {
+  content: "CHANGED";
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #f59e0b;
+  color: #111827;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Do not let badge cover compact KPI cards too much. */
+.kpi-card.scenario-affected::after,
+.mini-widget.scenario-affected::after {
+  top: 4px;
+  right: 5px;
+  font-size: 7px;
+  padding: 2px 5px;
+}
+
+/* Text emphasis inside affected values */
+.scenario-affected strong,
+.scenario-affected dd,
+.scenario-affected .metric-value,
+.scenario-affected .value,
+.scenario-affected [id] {
+  color: #b45309 !important;
+}
+
+/* Table row highlight */
+.budget-table tbody tr.scenario-affected {
+  outline-offset: -3px !important;
+}
+
+/* SVG/chart containers */
+.chart-card.scenario-affected,
+.chart-box.scenario-affected,
+.power-flow-wide.scenario-affected,
+.effect-flow-card.scenario-affected,
+.info-card.scenario-affected {
+  overflow: hidden;
+}
+
+/* Labels in 3D view */
+.annotation.scenario-affected {
+  border-color: #f59e0b !important;
+  box-shadow: 0 12px 30px rgba(245, 158, 11, 0.20) !important;
+}
+
+/* Keep right Calculated Results row highlight compatible with v57 */
+.result-row.scenario-changed,
+.result.scenario-changed,
+.calculated-row.scenario-changed {
+  border-radius: 8px;
+  background: rgba(255, 247, 237, 0.96) !important;
+  box-shadow: inset 4px 0 0 #f59e0b;
+}
+
+@media (max-width: 820px) {
+  .scenario-global-notice {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+    text-align: center;
+  }
+}
+
+
+/* v59: Scenario highlight is temporary only; remove fixed notice overlap */
+.scenario-global-notice {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Temporary highlight only. It will be removed by JS after the flash. */
+.scenario-affected {
+  position: relative;
+  border-radius: 10px !important;
+  outline: 2px solid rgba(245, 158, 11, 0.72) !important;
+  outline-offset: -2px !important;
+  background: rgba(255, 247, 237, 0.94) !important;
+  box-shadow:
+    inset 4px 0 0 #f59e0b,
+    0 0 0 1px rgba(245, 158, 11, 0.10) !important;
+  transition: background 0.18s ease, outline 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.scenario-affected-flash {
+  animation: scenarioAffectedFlashV59 1.45s ease 1;
+}
+
+@keyframes scenarioAffectedFlashV59 {
+  0% {
+    background: rgba(255, 237, 213, 1) !important;
+    outline-color: rgba(249, 115, 22, 0.98) !important;
+    box-shadow:
+      inset 5px 0 0 #f97316,
+      0 0 0 2px rgba(249, 115, 22, 0.28),
+      0 10px 24px rgba(249, 115, 22, 0.14) !important;
+    transform: translateY(-1px);
+  }
+  72% {
+    background: rgba(255, 247, 237, 0.94) !important;
+    transform: translateY(0);
+  }
+  100% {
+    background: transparent !important;
+    outline-color: rgba(245, 158, 11, 0) !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Make CHANGED tag temporary and smaller so it does not dominate the UI. */
+.scenario-affected::after {
+  content: "CHANGED";
+  position: absolute;
+  top: 5px;
+  right: 7px;
+  padding: 2px 5px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.92);
+  color: #111827;
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  pointer-events: none;
+  animation: scenarioBadgeFadeV59 1.45s ease 1 forwards;
+}
+
+@keyframes scenarioBadgeFadeV59 {
+  0%, 70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* The right rail notice is also temporary and compact. */
+.scenario-change-notice.visible {
+  display: block;
+  animation: scenarioNoticeFadeV59 1.65s ease 1 forwards;
+}
+
+@keyframes scenarioNoticeFadeV59 {
+  0%, 72% {
+    opacity: 1;
+    background: rgba(219, 234, 254, 0.72);
+  }
+  100% {
+    opacity: 0;
+    background: transparent;
+  }
+}
+
+
+/* v60: Scenario soft highlight only - no CHANGED badges, no heavy box shuffle */
+.scenario-global-notice,
+.scenario-change-notice {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* Remove all CHANGED badge pseudo-elements from scenario highlight. */
+.scenario-affected::after,
+.result-row.scenario-changed::after,
+.result.scenario-changed::after,
+.calculated-row.scenario-changed::after,
+.kpi-card.scenario-affected::after,
+.mini-widget.scenario-affected::after,
+.annotation.scenario-affected::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Soft temporary emphasis only. No persistent orange labels. */
+.scenario-affected,
+.result-row.scenario-changed,
+.result.scenario-changed,
+.calculated-row.scenario-changed {
+  border-radius: 9px !important;
+  outline: 1.5px solid rgba(96, 165, 250, 0.70) !important;
+  outline-offset: -2px !important;
+  background: rgba(239, 246, 255, 0.82) !important;
+  box-shadow:
+    inset 3px 0 0 rgba(59, 130, 246, 0.78),
+    0 0 0 1px rgba(59, 130, 246, 0.08) !important;
+  transition: background 0.18s ease, outline 0.18s ease, box-shadow 0.18s ease;
+  transform: none !important;
+}
+
+.scenario-affected-flash,
+.result-row.scenario-flash,
+.result.scenario-flash,
+.calculated-row.scenario-flash {
+  animation: scenarioSoftFlashV60 1.45s ease 1 forwards !important;
+}
+
+@keyframes scenarioSoftFlashV60 {
+  0% {
+    background: rgba(219, 234, 254, 1) !important;
+    outline-color: rgba(37, 99, 235, 0.92) !important;
+    box-shadow:
+      inset 4px 0 0 rgba(37, 99, 235, 0.92),
+      0 0 0 2px rgba(96, 165, 250, 0.22) !important;
+  }
+  72% {
+    background: rgba(239, 246, 255, 0.82) !important;
+  }
+  100% {
+    background: transparent !important;
+    outline-color: rgba(96, 165, 250, 0) !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Keep 3D annotation layout stable. Only glow, no badge, no transform, no text color override. */
+.annotation.scenario-affected {
+  background: rgba(239, 246, 255, 0.92) !important;
+  border-color: rgba(96, 165, 250, 0.80) !important;
+  box-shadow: 0 10px 24px rgba(59, 130, 246, 0.14) !important;
+  transform: none !important;
+}
+
+/* Prevent highlight from forcing overflow in compact cards. */
+.kpi-card.scenario-affected,
+.mini-widget.scenario-affected {
+  overflow: hidden !important;
+}
+
+/* Do not recolor every child aggressively; only values get a subtle blue emphasis. */
+.scenario-affected .metric-value,
+.scenario-affected strong,
+.scenario-affected dd,
+.scenario-changed [id^="res"] {
+  color: #1d4ed8 !important;
+}
+
+
+/* v61: actual changed-output visualization for Input Parameters */
+/* Remove confusing CHANGED text from Overview annotation highlights. */
+.annotation.label-impact b::after {
+  content: none !important;
+  display: none !important;
+}
+
+.annotation.label-impact {
+  animation: inputActualLabelPulseV61 1.35s ease-out !important;
+  border-color: rgba(59, 130, 246, 0.80) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18), 0 12px 28px rgba(15, 23, 42, 0.14) !important;
+  transform: none !important;
+}
+
+@keyframes inputActualLabelPulseV61 {
+  0% { background: rgba(219, 234, 254, 0.92); }
+  100% { background: rgba(255,255,255,0.92); }
+}
+
+/* Actual changed value pulse: softer and consistent across KPI / Results / Summary / panel values. */
+.value-changed {
+  animation: valueChangedPulseV61 1.35s ease-out !important;
+  border-radius: 6px !important;
+}
+
+@keyframes valueChangedPulseV61 {
+  0% {
+    background: rgba(219, 234, 254, 1);
+    color: #1d4ed8;
+    box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.26);
+  }
+  100% {
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+.changed-panel {
+  animation: changedPanelPulseV61 1.35s ease-out !important;
+}
+
+@keyframes changedPanelPulseV61 {
+  0% {
+    outline: 2px solid rgba(37, 99, 235, 0.72);
+    outline-offset: 2px;
+    background: rgba(239, 246, 255, 0.78);
+  }
+  100% {
+    outline: none;
+    background: inherit;
+  }
+}
+
+/* Temporary explanation note: tells which output areas actually changed. */
+.input-change-impact-note {
+  display: none;
+  position: fixed;
+  top: 70px;
+  right: 28px;
+  z-index: 2147482600;
+  max-width: 430px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(96, 165, 250, 0.36);
+  background: rgba(15, 23, 42, 0.95);
+  color: #f8fafc;
+  box-shadow: 0 16px 36px rgba(15, 23, 42, 0.26);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.input-change-impact-note.visible {
+  display: block;
+  animation: inputImpactNoteFadeV61 2.15s ease 1 forwards;
+}
+
+.input-change-impact-note b {
+  color: #bfdbfe;
+}
+
+.input-change-impact-note small {
+  display: block;
+  margin-top: 3px;
+  color: #cbd5e1;
+  font-weight: 700;
+}
+
+@keyframes inputImpactNoteFadeV61 {
+  0%, 72% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-3px); }
+}
+
+@media (max-width: 820px) {
+  .input-change-impact-note {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    max-width: none;
+  }
+}
+
+
+/* v62: light, non-intrusive highlight for Scenario and Input changes */
+/* Global/floating notices are removed; the highlight itself is enough. */
+.scenario-global-notice,
+.scenario-change-notice,
+.input-change-impact-note {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* No CHANGED text anywhere. */
+.scenario-affected::after,
+.result-row.scenario-changed::after,
+.result.scenario-changed::after,
+.calculated-row.scenario-changed::after,
+.kpi-card.scenario-affected::after,
+.mini-widget.scenario-affected::after,
+.annotation.scenario-affected::after,
+.annotation.label-impact b::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Unified light highlight: thin amber border + pale fill, no box jumping. */
+.scenario-affected,
+.result-row.scenario-changed,
+.result.scenario-changed,
+.calculated-row.scenario-changed,
+.changed-panel {
+  border-radius: 9px !important;
+  outline: 1.5px solid rgba(245, 158, 11, 0.55) !important;
+  outline-offset: -2px !important;
+  background: rgba(255, 251, 235, 0.70) !important;
+  box-shadow: inset 0 0 0 1px rgba(245, 158, 11, 0.10) !important;
+  transform: none !important;
+  transition: background 0.18s ease, outline 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+/* Values get only a small text background, like the user's preferred example. */
+.value-changed,
+.scenario-affected .metric-value,
+.scenario-affected strong,
+.scenario-affected dd,
+.scenario-changed [id^="res"],
+.changed-panel strong,
+.changed-panel dd {
+  color: inherit !important;
+  border-radius: 4px !important;
+  background: rgba(254, 240, 138, 0.45) !important;
+  box-shadow: none !important;
+  animation: lightValuePulseV62 1.15s ease-out 1 forwards !important;
+}
+
+/* Overview labels: light border only; no movement, no badge, no orange text. */
+.annotation.label-impact,
+.annotation.scenario-affected {
+  border-color: rgba(245, 158, 11, 0.48) !important;
+  background: rgba(255, 251, 235, 0.55) !important;
+  box-shadow: 0 8px 18px rgba(245, 158, 11, 0.08) !important;
+  transform: none !important;
+  animation: lightBoxPulseV62 1.15s ease-out 1 forwards !important;
+}
+
+/* Remove old strong pulse feeling. */
+.scenario-affected-flash,
+.result-row.scenario-flash,
+.result.scenario-flash,
+.calculated-row.scenario-flash {
+  animation: lightBoxPulseV62 1.15s ease-out 1 forwards !important;
+}
+
+@keyframes lightBoxPulseV62 {
+  0% {
+    outline-color: rgba(245, 158, 11, 0.72);
+    background: rgba(255, 251, 235, 0.86);
+  }
+  70% {
+    outline-color: rgba(245, 158, 11, 0.42);
+    background: rgba(255, 251, 235, 0.55);
+  }
+  100% {
+    outline-color: rgba(245, 158, 11, 0);
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+@keyframes lightValuePulseV62 {
+  0% {
+    background: rgba(254, 240, 138, 0.60);
+  }
+  70% {
+    background: rgba(254, 240, 138, 0.36);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+/* Keep compact cards stable. */
+.kpi-card.scenario-affected,
+.mini-widget.scenario-affected,
+.result-card dl > div.changed-panel {
+  overflow: hidden !important;
+}
+
+/* The Scenario select itself can get a subtle focus ring only. */
+.scenario-select select:focus,
+.scenario-select select.scenario-select-active {
+  outline: 2px solid rgba(59, 130, 246, 0.42) !important;
+  outline-offset: 2px !important;
+}
+
+
+/* v63: visible version update + borderless lightweight highlight */
+/* Highlight should be color-fill only. No outline/border ring. */
+.scenario-affected,
+.result-row.scenario-changed,
+.result.scenario-changed,
+.calculated-row.scenario-changed,
+.changed-panel {
+  outline: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  background: rgba(254, 240, 138, 0.32) !important;
+  transform: none !important;
+}
+
+/* Calculated Results rows: only value/row fill, no border line. */
+.result-card dl > div.changed-panel,
+.result-card dl > div.scenario-affected,
+.result-card dl > div.scenario-changed {
+  outline: none !important;
+  box-shadow: none !important;
+  background: rgba(254, 240, 138, 0.26) !important;
+  border-radius: 6px !important;
+}
+
+/* Top/Bottom cards also use fill only. */
+.kpi-card.changed-panel,
+.kpi-card.scenario-affected,
+.mini-widget.changed-panel,
+.mini-widget.scenario-affected {
+  outline: none !important;
+  box-shadow: none !important;
+  background: rgba(254, 240, 138, 0.26) !important;
+}
+
+/* Overview annotations: no border pulse. Keep a very light fill only. */
+.annotation.label-impact,
+.annotation.scenario-affected,
+.annotation.changed-panel {
+  outline: none !important;
+  border-color: rgba(209, 213, 219, 0.72) !important;
+  box-shadow: none !important;
+  background: rgba(254, 240, 138, 0.18) !important;
+  transform: none !important;
+}
+
+/* Value-level effect remains subtle. */
+.value-changed,
+.scenario-affected .metric-value,
+.scenario-affected strong,
+.scenario-affected dd,
+.scenario-changed [id^="res"],
+.changed-panel strong,
+.changed-panel dd {
+  background: rgba(254, 240, 138, 0.46) !important;
+  border-radius: 4px !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Override prior animations that used outline/shadow. */
+@keyframes lightBoxPulseV62 {
+  0% { background: rgba(254, 240, 138, 0.44); outline-color: transparent; box-shadow: none; }
+  70% { background: rgba(254, 240, 138, 0.28); outline-color: transparent; box-shadow: none; }
+  100% { background: transparent; outline-color: transparent; box-shadow: none; }
+}
+
+@keyframes changedPanelPulseV61 {
+  0% { outline: none; background: rgba(254, 240, 138, 0.32); }
+  100% { outline: none; background: transparent; }
+}
+
+@keyframes valueChangedPulseV61 {
+  0% { background: rgba(254, 240, 138, 0.46); color: inherit; box-shadow: none; }
+  100% { background: transparent; box-shadow: none; }
+}

@@ -1436,3 +1436,753 @@ function bindCalculatedFormulaTooltips() {
 }
 
 bindCalculatedFormulaTooltips();
+
+
+/* v57: visualize Calculated Results changed by Scenario selection */
+const scenarioChangedResultIdsV57 = [
+  "resEacc",
+  "resPc",
+  "resPb",
+  "resBetaOpt",
+  "resPg",
+  "resPr",
+  "resGain"
+];
+
+let lastScenarioValueV57 = null;
+
+function getCalculatedResultContainerV57(id) {
+  const el = document.getElementById(id);
+  if (!el) return null;
+  return el.closest(".result-row") || el.closest(".result") || el.closest("li") || el.parentElement;
+}
+
+function clearScenarioResultHighlightsV57() {
+  scenarioChangedResultIdsV57.forEach((id) => {
+    const row = getCalculatedResultContainerV57(id);
+    if (!row) return;
+    row.classList.remove("scenario-changed", "scenario-flash");
+  });
+
+  const notice = document.getElementById("scenarioChangeNotice");
+  if (notice) notice.classList.remove("visible");
+}
+
+function applyScenarioResultHighlightsV57(forceFlash = false) {
+  const nCavEl = document.getElementById("nCav");
+  if (!nCavEl) return;
+
+  const nCav = Number(nCavEl.value);
+  const isScenario = Number.isFinite(nCav) && nCav !== 10;
+
+  clearScenarioResultHighlightsV57();
+
+  if (!isScenario && !forceFlash) {
+    lastScenarioValueV57 = nCav;
+    return;
+  }
+
+  scenarioChangedResultIdsV57.forEach((id) => {
+    const row = getCalculatedResultContainerV57(id);
+    if (!row) return;
+    row.classList.add("scenario-changed");
+
+    if (forceFlash || lastScenarioValueV57 !== nCav) {
+      row.classList.remove("scenario-flash");
+      void row.offsetWidth;
+      row.classList.add("scenario-flash");
+    }
+  });
+
+  const notice = document.getElementById("scenarioChangeNotice");
+  if (notice) {
+    notice.textContent = `Scenario NC-${nCav}: cavity-count dependent results are highlighted.`;
+    notice.classList.add("visible");
+  }
+
+  lastScenarioValueV57 = nCav;
+}
+
+function bindScenarioHighlightV57() {
+  const scenarioSelect = document.getElementById("scenarioSelect");
+  if (scenarioSelect) {
+    scenarioSelect.addEventListener("change", () => {
+      window.setTimeout(() => applyScenarioResultHighlightsV57(true), 30);
+    }, true);
+  }
+
+  document.querySelectorAll(".scenario-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      window.setTimeout(() => applyScenarioResultHighlightsV57(true), 30);
+    }, true);
+  });
+
+  const nCavEl = document.getElementById("nCav");
+  if (nCavEl) {
+    nCavEl.addEventListener("input", () => {
+      window.setTimeout(() => applyScenarioResultHighlightsV57(true), 30);
+    });
+  }
+
+  window.setTimeout(() => applyScenarioResultHighlightsV57(false), 100);
+}
+
+bindScenarioHighlightV57();
+
+
+/* v58: Scenario global changed-value visualization */
+const scenarioBaselineSnapshotV58 = new Map();
+let lastScenarioValueV58 = null;
+let scenarioSnapshotReadyV58 = false;
+
+const scenarioValueIdsV58 = [
+  // Top KPI values
+  "kpiTotalLoss", "kpiBeamLossPower", "kpiPhase", "kpiVc", "kpiEacc", "kpiPg", "kpiPr",
+  // Calculated Results
+  "resQ", "resCos", "resPhase", "resRQ", "resRsh", "resQ0", "resQL", "resBeta",
+  "resBetaOpt", "resEacc", "resPc", "resPb", "resPg", "resPr", "resFcav", "resDeltaF",
+  "resTuneSlope", "resCadQ0", "resDetuneEstimate", "resFreqSpec", "resGain",
+  // Bottom summary widgets
+  "miniEnergyLoss", "miniBeamPower", "miniCavityVoltage", "miniDissipated", "miniForward",
+  "miniDetune", "miniHprfMargin",
+  // 3D annotation dynamic values
+  "annoFcav", "annoDetune", "annoRQ", "annoRsh", "annoQe",
+  // Detune / HPRF / Power panel values if present
+  "panelFcav", "panelDeltaF", "panelSlope", "panelCadQ0",
+  "detuneValue", "hprfCoupler", "hprfLine", "hprfHom", "hprfSspa", "hprfRated", "hprfMargin",
+  "flowSspa", "flowLine", "flowCoupler", "flowCavity", "flowBeam", "flowDissipated", "flowReflected"
+];
+
+const scenarioSemanticSelectorsV58 = [
+  ".kpi-card",
+  ".mini-widget",
+  ".annotation",
+  ".budget-table tbody tr.selected-row",
+  "#panel-power .power-flow-wide",
+  "#panel-hprf .info-card",
+  "#panel-detune .info-card",
+  "#panel-cavity .info-card",
+  "#panel-beam .chart-card",
+  "#panel-cavity .chart-card",
+  "#panel-effect .effect-flow-card",
+  "#panel-effect .effect-table-card"
+];
+
+function getScenarioContainerV58(el) {
+  if (!el) return null;
+  return el.closest(".kpi-card")
+      || el.closest(".mini-widget")
+      || el.closest(".result-row")
+      || el.closest(".result")
+      || el.closest(".annotation")
+      || el.closest(".info-card")
+      || el.closest(".chart-card")
+      || el.closest(".chart-box")
+      || el.closest(".power-flow-wide")
+      || el.closest(".effect-flow-card")
+      || el.closest(".effect-table-card")
+      || el.closest("tr")
+      || el.parentElement;
+}
+
+function clearScenarioGlobalHighlightsV58() {
+  document.querySelectorAll(".scenario-affected, .scenario-affected-flash").forEach((el) => {
+    el.classList.remove("scenario-affected", "scenario-affected-flash");
+  });
+
+  const globalNotice = document.getElementById("scenarioGlobalNotice");
+  if (globalNotice) globalNotice.classList.remove("visible");
+
+  if (typeof clearScenarioResultHighlightsV57 === "function") {
+    clearScenarioResultHighlightsV57();
+  }
+}
+
+function takeScenarioSnapshotV58() {
+  scenarioBaselineSnapshotV58.clear();
+  scenarioValueIdsV58.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) scenarioBaselineSnapshotV58.set(id, (el.textContent || "").trim());
+  });
+  scenarioSnapshotReadyV58 = true;
+}
+
+function markScenarioTargetV58(target, flash = false) {
+  if (!target) return;
+  target.classList.add("scenario-affected");
+  if (flash) {
+    target.classList.remove("scenario-affected-flash");
+    void target.offsetWidth;
+    target.classList.add("scenario-affected-flash");
+  }
+}
+
+function applyScenarioGlobalHighlightsV58(forceFlash = false) {
+  const nCavEl = document.getElementById("nCav");
+  const nCav = nCavEl ? Number(nCavEl.value) : 10;
+
+  if (!scenarioSnapshotReadyV58) {
+    takeScenarioSnapshotV58();
+  }
+
+  clearScenarioGlobalHighlightsV58();
+
+  const isBaseline = Number.isFinite(nCav) && nCav === 10;
+  if (isBaseline && !forceFlash) {
+    lastScenarioValueV58 = nCav;
+    return;
+  }
+
+  const shouldFlash = forceFlash || lastScenarioValueV58 !== nCav;
+
+  // Actual value-change based highlighting against NC-10 baseline snapshot.
+  scenarioValueIdsV58.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const before = scenarioBaselineSnapshotV58.get(id);
+    const now = (el.textContent || "").trim();
+
+    if (before !== undefined && before !== now) {
+      markScenarioTargetV58(getScenarioContainerV58(el), shouldFlash);
+    }
+  });
+
+  // Semantic view-level highlighting for panels whose data is scenario-linked.
+  scenarioSemanticSelectorsV58.forEach((selector) => {
+    document.querySelectorAll(selector).forEach((el) => {
+      const text = (el.textContent || "").toLowerCase();
+      const likelyScenarioLinked =
+        text.includes("cavity") ||
+        text.includes("power") ||
+        text.includes("eacc") ||
+        text.includes("pc") ||
+        text.includes("pb") ||
+        text.includes("pg") ||
+        text.includes("hprf") ||
+        text.includes("margin") ||
+        text.includes("coupler") ||
+        text.includes("voltage") ||
+        text.includes("detune") ||
+        text.includes("q") ||
+        el.matches(".budget-table tbody tr.selected-row");
+
+      if (likelyScenarioLinked) {
+        markScenarioTargetV58(el, shouldFlash);
+      }
+    });
+  });
+
+  const globalNotice = document.getElementById("scenarioGlobalNotice");
+  if (globalNotice) {
+    globalNotice.textContent = `Scenario NC-${nCav}: changed values are highlighted across the screen.`;
+    globalNotice.classList.add("visible");
+  }
+
+  const localNotice = document.getElementById("scenarioChangeNotice");
+  if (localNotice) {
+    localNotice.textContent = `Scenario NC-${nCav}: all scenario-linked changed values are highlighted.`;
+    localNotice.classList.add("visible");
+  }
+
+  lastScenarioValueV58 = nCav;
+}
+
+function bindScenarioGlobalHighlightV58() {
+  window.setTimeout(() => takeScenarioSnapshotV58(), 250);
+
+  const scenarioSelect = document.getElementById("scenarioSelect");
+  if (scenarioSelect) {
+    scenarioSelect.addEventListener("change", () => {
+      window.setTimeout(() => applyScenarioGlobalHighlightsV58(true), 80);
+    }, true);
+  }
+
+  document.querySelectorAll(".scenario-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      window.setTimeout(() => applyScenarioGlobalHighlightsV58(true), 80);
+    }, true);
+  });
+
+  const nCavEl = document.getElementById("nCav");
+  if (nCavEl) {
+    nCavEl.addEventListener("input", () => {
+      window.setTimeout(() => applyScenarioGlobalHighlightsV58(true), 80);
+    });
+  }
+
+  // Re-apply after chart/view redraws.
+  document.querySelectorAll(".tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      window.setTimeout(() => applyScenarioGlobalHighlightsV58(false), 160);
+    });
+  });
+}
+
+bindScenarioGlobalHighlightV58();
+
+
+/* v59: Scenario visualization should be temporary, not persistent */
+let scenarioTempClearTimerV59 = null;
+
+function clearScenarioGlobalHighlightsV59() {
+  document.querySelectorAll(".scenario-affected, .scenario-affected-flash, .scenario-changed, .scenario-flash").forEach((el) => {
+    el.classList.remove("scenario-affected", "scenario-affected-flash", "scenario-changed", "scenario-flash");
+  });
+
+  const globalNotice = document.getElementById("scenarioGlobalNotice");
+  if (globalNotice) {
+    globalNotice.classList.remove("visible");
+    globalNotice.textContent = "";
+  }
+
+  const localNotice = document.getElementById("scenarioChangeNotice");
+  if (localNotice) {
+    localNotice.classList.remove("visible");
+  }
+}
+
+function scheduleScenarioHighlightClearV59() {
+  if (scenarioTempClearTimerV59) {
+    window.clearTimeout(scenarioTempClearTimerV59);
+  }
+  scenarioTempClearTimerV59 = window.setTimeout(() => {
+    clearScenarioGlobalHighlightsV59();
+  }, 1700);
+}
+
+if (typeof applyScenarioGlobalHighlightsV58 === "function") {
+  const originalApplyScenarioGlobalHighlightsV58 = applyScenarioGlobalHighlightsV58;
+  applyScenarioGlobalHighlightsV58 = function(forceFlash = false) {
+    originalApplyScenarioGlobalHighlightsV58(forceFlash);
+
+    const globalNotice = document.getElementById("scenarioGlobalNotice");
+    if (globalNotice) {
+      globalNotice.classList.remove("visible");
+      globalNotice.textContent = "";
+    }
+
+    scheduleScenarioHighlightClearV59();
+  };
+}
+
+if (typeof applyScenarioResultHighlightsV57 === "function") {
+  const originalApplyScenarioResultHighlightsV57 = applyScenarioResultHighlightsV57;
+  applyScenarioResultHighlightsV57 = function(forceFlash = false) {
+    originalApplyScenarioResultHighlightsV57(forceFlash);
+    scheduleScenarioHighlightClearV59();
+  };
+}
+
+
+/* v60: Scenario highlight actual changed values only; no permanent badges */
+let scenarioTempClearTimerV60 = null;
+
+function clearScenarioGlobalHighlightsV60() {
+  document.querySelectorAll(".scenario-affected, .scenario-affected-flash, .scenario-changed, .scenario-flash").forEach((el) => {
+    el.classList.remove("scenario-affected", "scenario-affected-flash", "scenario-changed", "scenario-flash");
+  });
+
+  ["scenarioGlobalNotice", "scenarioChangeNotice"].forEach((id) => {
+    const notice = document.getElementById(id);
+    if (notice) {
+      notice.classList.remove("visible");
+      notice.textContent = "";
+    }
+  });
+}
+
+function scheduleScenarioHighlightClearV60() {
+  if (scenarioTempClearTimerV60) {
+    window.clearTimeout(scenarioTempClearTimerV60);
+  }
+  scenarioTempClearTimerV60 = window.setTimeout(() => {
+    clearScenarioGlobalHighlightsV60();
+  }, 1500);
+}
+
+function getScenarioContainerV60(el) {
+  if (!el) return null;
+  return el.closest(".kpi-card")
+      || el.closest(".mini-widget")
+      || el.closest(".result-row")
+      || el.closest(".result")
+      || el.closest(".annotation")
+      || el.closest(".info-card")
+      || el.closest(".power-flow-wide")
+      || el.closest("tr")
+      || el.parentElement;
+}
+
+function markScenarioTargetV60(target, flash = true) {
+  if (!target) return;
+  target.classList.add("scenario-affected");
+  if (flash) {
+    target.classList.remove("scenario-affected-flash");
+    void target.offsetWidth;
+    target.classList.add("scenario-affected-flash");
+  }
+}
+
+function applyScenarioSoftHighlightsV60(forceFlash = true) {
+  const nCavEl = document.getElementById("nCav");
+  const nCav = nCavEl ? Number(nCavEl.value) : 10;
+
+  if (typeof scenarioBaselineSnapshotV58 !== "undefined" && typeof scenarioSnapshotReadyV58 !== "undefined" && !scenarioSnapshotReadyV58) {
+    takeScenarioSnapshotV58();
+  }
+
+  clearScenarioGlobalHighlightsV60();
+
+  // NC-10 is the baseline. Show no scenario highlight after returning to baseline.
+  if (Number.isFinite(nCav) && nCav === 10) {
+    return;
+  }
+
+  const ids = (typeof scenarioValueIdsV58 !== "undefined") ? scenarioValueIdsV58 : [];
+  ids.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    let before;
+    if (typeof scenarioBaselineSnapshotV58 !== "undefined") {
+      before = scenarioBaselineSnapshotV58.get(id);
+    }
+    const now = (el.textContent || "").trim();
+
+    if (before !== undefined && before !== now) {
+      markScenarioTargetV60(getScenarioContainerV60(el), forceFlash);
+    }
+  });
+
+  // The NC Power Table selected row is a scenario context indicator, but still soft and temporary.
+  document.querySelectorAll(".budget-table tbody tr.selected-row").forEach((row) => {
+    markScenarioTargetV60(row, forceFlash);
+  });
+
+  scheduleScenarioHighlightClearV60();
+}
+
+// Override previous v57/v58 persistent behavior.
+applyScenarioGlobalHighlightsV58 = function(forceFlash = true) {
+  applyScenarioSoftHighlightsV60(forceFlash);
+};
+
+if (typeof applyScenarioResultHighlightsV57 === "function") {
+  applyScenarioResultHighlightsV57 = function(forceFlash = true) {
+    applyScenarioSoftHighlightsV60(forceFlash);
+  };
+}
+
+function bindScenarioSoftHighlightV60() {
+  const run = () => window.setTimeout(() => applyScenarioSoftHighlightsV60(true), 80);
+
+  const scenarioSelect = document.getElementById("scenarioSelect");
+  if (scenarioSelect) scenarioSelect.addEventListener("change", run, true);
+
+  document.querySelectorAll(".scenario-btn").forEach((button) => {
+    button.addEventListener("click", run, true);
+  });
+
+  const nCavEl = document.getElementById("nCav");
+  if (nCavEl) nCavEl.addEventListener("input", run);
+
+  document.querySelectorAll(".tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      window.setTimeout(() => applyScenarioSoftHighlightsV60(false), 140);
+    });
+  });
+}
+
+bindScenarioSoftHighlightV60();
+
+
+/* v61: highlight actual changed outputs for each input, not only component labels */
+const outputIdsToWatchV61 = [
+  "sideTotalLoss", "sideQe", "sideRfCheck", "sideFcav", "sideDeltaF",
+  "kpiTotalLoss", "kpiBeamLoss", "kpiPhase", "kpiVc", "kpiEacc", "kpiPg", "kpiPr",
+  "resQ", "resCos", "resPhase", "resRQ", "resRsh", "resQ0", "resQL", "resBeta", "resBetaOpt",
+  "resEacc", "resPc", "resPb", "resPg", "resPr", "resFcav", "resDeltaF", "resTuneSlope",
+  "resCadQ0", "resDetuneEstimate", "resFreqSpec", "resGain",
+  "marginCoupler", "marginSSPA", "marginRated", "marginAvailable",
+  "flowSSPA", "flowLine", "flowCoupler", "flowCavity", "flowBeam", "flowPc", "flowPr",
+  "detuneValue", "panelFcav", "panelDeltaF", "panelSlope", "panelCadQ0",
+  "panelVc", "panelEacc", "panelPc", "panelQe", "panelQL", "panelBetaOpt",
+  "beamRfCheck", "beamLossPanel",
+  "widgetEnergy", "widgetBeam", "widgetVc", "widgetPc", "widgetPg", "widgetDetune", "widgetMargin",
+  "annoFcav", "annoDetune", "annoRQ", "annoRsh", "annoQe"
+];
+
+const inputImpactTargetsV61 = {
+  energy: ["resGain"],
+  current: ["kpiBeamLoss", "resPb", "resBetaOpt", "resPg", "widgetBeam", "widgetPg", "marginCoupler", "marginSSPA", "marginAvailable", "flowBeam", "flowCoupler", "flowSSPA", "beamLossPanel"],
+  circumference: ["sideRfCheck", "beamRfCheck"],
+  harmonic: ["sideRfCheck", "beamRfCheck"],
+  revFreq: ["sideRfCheck", "beamRfCheck"],
+  rfFreq: ["resDeltaF", "resDetuneEstimate", "resFreqSpec", "widgetDetune", "annoDetune", "sideDeltaF", "panelDeltaF", "detuneValue"],
+  lossBending: ["sideTotalLoss", "kpiTotalLoss", "kpiBeamLoss", "kpiPhase", "resQ", "resCos", "resPhase", "resPb", "resBetaOpt", "resPg", "widgetEnergy", "widgetBeam", "widgetPg", "marginCoupler", "marginSSPA", "marginAvailable", "flowBeam", "flowCoupler", "flowSSPA", "beamLossPanel"],
+  lossID: ["sideTotalLoss", "kpiTotalLoss", "kpiBeamLoss", "kpiPhase", "resQ", "resCos", "resPhase", "resPb", "resBetaOpt", "resPg", "widgetEnergy", "widgetBeam", "widgetPg", "marginCoupler", "marginSSPA", "marginAvailable", "flowBeam", "flowCoupler", "flowSSPA", "beamLossPanel"],
+  lossOther: ["sideTotalLoss", "kpiTotalLoss", "kpiBeamLoss", "kpiPhase", "resQ", "resCos", "resPhase", "resPb", "resBetaOpt", "resPg", "widgetEnergy", "widgetBeam", "widgetPg", "marginCoupler", "marginSSPA", "marginAvailable", "flowBeam", "flowCoupler", "flowSSPA", "beamLossPanel"],
+  vTotal: ["kpiVc", "kpiEacc", "kpiPhase", "resQ", "resCos", "resPhase", "resEacc", "resPc", "resBetaOpt", "resPg", "widgetVc", "widgetPc", "widgetPg", "panelVc", "panelEacc", "panelPc", "flowCavity", "flowPc"],
+  nCav: ["kpiVc", "kpiEacc", "kpiPg", "kpiPr", "resEacc", "resPc", "resPb", "resBetaOpt", "resPg", "resPr", "widgetVc", "widgetPc", "widgetPg", "widgetBeam", "widgetMargin", "panelVc", "panelEacc", "panelPc", "flowCavity", "flowBeam", "flowPc", "flowPr", "marginCoupler", "marginSSPA", "marginAvailable"],
+  rq: ["resRQ", "annoRQ"],
+  q0: ["resQ0", "resQL", "sideQe", "annoQe", "panelQe", "panelQL"],
+  rsh: ["resRsh", "annoRsh", "resPc", "resBetaOpt", "resPg", "widgetPc", "widgetPg", "panelPc", "flowPc", "flowCoupler", "marginCoupler"],
+  cavLength: ["kpiEacc", "resEacc", "widgetVc", "panelEacc"],
+  beta: ["resBeta", "resQL", "sideQe", "annoQe", "panelQe", "panelQL"],
+  tunerPos: ["resFcav", "resDeltaF", "resTuneSlope", "resCadQ0", "resDetuneEstimate", "resFreqSpec", "widgetDetune", "annoFcav", "annoDetune", "sideFcav", "sideDeltaF", "panelFcav", "panelDeltaF", "panelSlope", "panelCadQ0", "detuneValue"],
+  tunerRefPosition: ["resFcav", "resDeltaF", "resDetuneEstimate", "resFreqSpec", "widgetDetune", "annoFcav", "annoDetune", "sideFcav", "sideDeltaF", "panelFcav", "panelDeltaF", "detuneValue"],
+  tunerRefFreq: ["resFcav", "resDeltaF", "resDetuneEstimate", "resFreqSpec", "widgetDetune", "annoFcav", "annoDetune", "sideFcav", "sideDeltaF", "panelFcav", "panelDeltaF", "detuneValue"],
+  tunerSpecWindow: ["resFreqSpec"],
+  homLoss: ["kpiPg", "resPg", "widgetPg", "widgetMargin", "marginCoupler", "marginSSPA", "marginAvailable", "flowCoupler", "flowSSPA"],
+  lineLoss: ["marginSSPA", "marginAvailable", "widgetMargin", "flowLine", "flowSSPA"],
+  opPoint: ["marginRated", "marginAvailable", "widgetMargin"]
+};
+
+const inputLabelImpactTargetsV61 = {
+  current: [],
+  lossBending: [],
+  lossID: [],
+  lossOther: [],
+  vTotal: ["body"],
+  nCav: ["body", "frame"],
+  rq: ["branch"],
+  q0: ["coupler"],
+  rsh: ["body"],
+  cavLength: ["body"],
+  beta: ["coupler"],
+  tunerPos: ["tuner"],
+  tunerRefPosition: ["tuner"],
+  tunerRefFreq: ["tuner"],
+  tunerSpecWindow: [],
+  homLoss: [],
+  lineLoss: [],
+  opPoint: [],
+  harmonic: [],
+  rfFreq: ["tuner"],
+  revFreq: [],
+  circumference: []
+};
+
+let lastChangedInputIdV61 = null;
+let inputImpactNoteTimerV61 = null;
+
+function snapshotOutputs() {
+  const snapshot = {};
+  outputIdsToWatchV61.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) snapshot[id] = (el.textContent || "").trim();
+  });
+  return snapshot;
+}
+
+function getChangedOutputContainerV61(el) {
+  if (!el) return null;
+  return el.closest(".kpi-card")
+      || el.closest(".mini-widget")
+      || el.closest(".result-card dl > div")
+      || el.closest(".derived-pill")
+      || el.closest(".annotation")
+      || el.closest(".info-card")
+      || el.closest(".power-node")
+      || el.closest(".flow-node")
+      || el.closest(".chart-card")
+      || el.closest(".card")
+      || el.parentElement;
+}
+
+function shortChangedLabelV61(id) {
+  const el = document.getElementById(id);
+  const container = getChangedOutputContainerV61(el);
+  if (!container) return id;
+
+  const dt = container.querySelector("dt");
+  if (dt) return dt.textContent.trim();
+
+  const title = container.querySelector("span, b, h3");
+  if (title) return title.textContent.trim();
+
+  if (id.startsWith("kpi")) return id.replace("kpi", "KPI ");
+  if (id.startsWith("widget")) return id.replace("widget", "Summary ");
+  if (id.startsWith("anno")) return "Overview label";
+  return id;
+}
+
+function showInputImpactNoteV61(inputId, changedIds) {
+  const note = document.getElementById("inputChangeImpactNote");
+  if (!note) return;
+
+  const uniqueLabels = [...new Set(changedIds.map(shortChangedLabelV61))].filter(Boolean).slice(0, 6);
+  const inputLabel = document.querySelector(`label[for="${inputId}"], #${inputId}`)?.closest("label")?.textContent?.trim()
+    || inputId;
+
+  if (!uniqueLabels.length) {
+    note.innerHTML = `<b>${inputLabel}</b><small>현재 표시 영역에서 직접 바뀐 출력값은 없습니다. 필요 시 관련 탭에서 확인하세요.</small>`;
+  } else {
+    note.innerHTML = `<b>${inputLabel}</b><small>Changed outputs: ${uniqueLabels.join(" · ")}</small>`;
+  }
+
+  note.classList.remove("visible");
+  void note.offsetWidth;
+  note.classList.add("visible");
+
+  if (inputImpactNoteTimerV61) window.clearTimeout(inputImpactNoteTimerV61);
+  inputImpactNoteTimerV61 = window.setTimeout(() => {
+    note.classList.remove("visible");
+  }, 2200);
+}
+
+function flashChangedOutputs(beforeSnapshot) {
+  if (suppressChangeFlash) return;
+
+  const changedIds = [];
+  outputIdsToWatchV61.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const before = beforeSnapshot[id];
+    const after = (el.textContent || "").trim();
+
+    if (before !== undefined && before !== after) {
+      changedIds.push(id);
+      el.classList.remove("value-changed");
+      void el.offsetWidth;
+      el.classList.add("value-changed");
+
+      const panel = getChangedOutputContainerV61(el);
+      if (panel) {
+        panel.classList.remove("changed-panel");
+        void panel.offsetWidth;
+        panel.classList.add("changed-panel");
+      }
+    }
+  });
+
+  // Also highlight expected targets if the value is off-screen or text did not change due rounding.
+  if (lastChangedInputIdV61) {
+    (inputImpactTargetsV61[lastChangedInputIdV61] || []).forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const panel = getChangedOutputContainerV61(el);
+      if (panel) {
+        panel.classList.remove("changed-panel");
+        void panel.offsetWidth;
+        panel.classList.add("changed-panel");
+      }
+      if (!changedIds.includes(id)) changedIds.push(id);
+    });
+    showInputImpactNoteV61(lastChangedInputIdV61, changedIds);
+  }
+}
+
+function flashExpectedImpact(inputId) {
+  const ids = inputImpactTargetsV61[inputId] || [];
+  ids.forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.classList.remove("value-changed");
+    void el.offsetWidth;
+    el.classList.add("value-changed");
+
+    const panel = getChangedOutputContainerV61(el);
+    if (panel) {
+      panel.classList.remove("changed-panel");
+      void panel.offsetWidth;
+      panel.classList.add("changed-panel");
+    }
+  });
+  showInputImpactNoteV61(inputId, ids);
+}
+
+function flashLabelImpacts(inputId) {
+  lastChangedInputIdV61 = inputId;
+  const targets = [...new Set(inputLabelImpactTargetsV61[inputId] || [])];
+
+  document.querySelectorAll(".annotation.label-impact").forEach((el) => el.classList.remove("label-impact"));
+
+  targets.forEach((area) => {
+    const label = document.querySelector(`[data-label-area="${area}"]`);
+    if (label) {
+      void label.offsetWidth;
+      label.classList.add("label-impact");
+    }
+  });
+}
+
+
+/* v62: light highlight behavior, no explanatory floating boxes */
+let lightHighlightTimerV62 = null;
+
+function clearLightHighlightsV62() {
+  document.querySelectorAll(".scenario-affected, .scenario-affected-flash, .scenario-changed, .scenario-flash, .changed-panel, .value-changed, .label-impact").forEach((el) => {
+    el.classList.remove("scenario-affected", "scenario-affected-flash", "scenario-changed", "scenario-flash", "changed-panel", "value-changed", "label-impact");
+  });
+  document.querySelectorAll(".scenario-select select").forEach((el) => el.classList.remove("scenario-select-active"));
+  ["scenarioGlobalNotice", "scenarioChangeNotice", "inputChangeImpactNote"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.classList.remove("visible");
+      el.textContent = "";
+      el.innerHTML = "";
+    }
+  });
+}
+
+function scheduleLightHighlightClearV62() {
+  if (lightHighlightTimerV62) window.clearTimeout(lightHighlightTimerV62);
+  lightHighlightTimerV62 = window.setTimeout(clearLightHighlightsV62, 1250);
+}
+
+/* Override note to no-op; highlight only. */
+function showInputImpactNoteV61(inputId, changedIds) {
+  scheduleLightHighlightClearV62();
+}
+
+/* Wrap existing scenario highlighters so they clear quickly and do not keep labels. */
+if (typeof applyScenarioSoftHighlightsV60 === "function") {
+  const previousApplyScenarioSoftHighlightsV60 = applyScenarioSoftHighlightsV60;
+  applyScenarioSoftHighlightsV60 = function(forceFlash = true) {
+    previousApplyScenarioSoftHighlightsV60(forceFlash);
+    const select = document.getElementById("scenarioSelect");
+    if (select) select.classList.add("scenario-select-active");
+    scheduleLightHighlightClearV62();
+  };
+}
+
+if (typeof applyScenarioGlobalHighlightsV58 === "function") {
+  applyScenarioGlobalHighlightsV58 = function(forceFlash = true) {
+    if (typeof applyScenarioSoftHighlightsV60 === "function") {
+      applyScenarioSoftHighlightsV60(forceFlash);
+    }
+    scheduleLightHighlightClearV62();
+  };
+}
+
+if (typeof applyScenarioResultHighlightsV57 === "function") {
+  applyScenarioResultHighlightsV57 = function(forceFlash = true) {
+    if (typeof applyScenarioSoftHighlightsV60 === "function") {
+      applyScenarioSoftHighlightsV60(forceFlash);
+    }
+    scheduleLightHighlightClearV62();
+  };
+}
+
+/* Also clear after normal input changed output flashes. */
+const previousFlashChangedOutputsV62 = flashChangedOutputs;
+flashChangedOutputs = function(beforeSnapshot) {
+  previousFlashChangedOutputsV62(beforeSnapshot);
+  scheduleLightHighlightClearV62();
+};
+
+const previousFlashExpectedImpactV62 = flashExpectedImpact;
+flashExpectedImpact = function(inputId) {
+  previousFlashExpectedImpactV62(inputId);
+  scheduleLightHighlightClearV62();
+};
+
+const previousFlashLabelImpactsV62 = flashLabelImpacts;
+flashLabelImpacts = function(inputId) {
+  previousFlashLabelImpactsV62(inputId);
+  scheduleLightHighlightClearV62();
+};

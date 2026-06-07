@@ -173,6 +173,7 @@
     </aside>
 
     <main class="main-dashboard">
+      <div id="inputChangeImpactNote" class="input-change-impact-note"></div>
       <section class="search-row">
         <button type="button" id="mobileParamToggle" class="mobile-param-toggle">Parameters</button>
         <div class="parameter-search" role="search" aria-label="Parameter search">
@@ -417,6 +418,8 @@
 <aside class="right-rail">
           <section class="card result-card">
             <h2>Calculated Results</h2>
+            <div id="scenarioChangeNotice" class="scenario-change-notice">Scenario-linked values will be highlighted here.</div>
+            <div id="scenarioGlobalNotice" class="scenario-global-notice">Scenario-linked values are highlighted across the current screen.</div>
             <dl>
               <div><dt>Over-voltage Factor (q)</dt><dd id="resQ">-</dd></div>
               <div><dt>cos(φs)</dt><dd id="resCos">-</dd></div>
@@ -459,7 +462,7 @@
         <span>Dataset: 4GSR NC Cavity</span>
         <span>PV Prefix Preview: RF:4GSR:NC:</span>
         <span id="footerTime">-</span>
-        <span class="version-badge">V.53</span>
+        <span class="footer-version-wrap"><span class="version-badge">V.63</span><span class="footer-woo" aria-label="creator signature">WOO</span></span>
       </footer>
     </main>
   </div>
