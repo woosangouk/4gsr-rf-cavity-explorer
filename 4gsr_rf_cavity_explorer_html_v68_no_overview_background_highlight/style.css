@@ -5998,3 +5998,366 @@ body {
   0% { background: rgba(254, 240, 138, 0.46); color: inherit; box-shadow: none; }
   100% { background: transparent; box-shadow: none; }
 }
+
+
+/* v66: restore original KPI position and keep bottom summary visible */
+/* V65 grid-stack rule moved Total Energy Loss~Reflected Power out of place.
+   This patch is based on V63 and does NOT change KPI order or header position. */
+
+/* Keep the original top KPI row directly under navigation. */
+.kpi-grid {
+  position: relative !important;
+  z-index: 3 !important;
+  margin-top: 10px !important;
+  margin-bottom: 10px !important;
+  height: auto !important;
+  min-height: 58px !important;
+  overflow: visible !important;
+}
+
+.kpi-card {
+  height: 58px !important;
+  min-height: 58px !important;
+  max-height: 58px !important;
+  overflow: hidden !important;
+}
+
+/* Middle workspace gets clipped before it can cover the summary widgets. */
+.workspace-grid {
+  position: relative !important;
+  z-index: 2 !important;
+  height: calc(100vh - 310px) !important;
+  min-height: 430px !important;
+  max-height: calc(100vh - 310px) !important;
+  overflow: hidden !important;
+}
+
+/* Overview/content must remain inside workspace only. */
+.view-area,
+.tab-panel,
+.tab-panel.active,
+.cavity-scene {
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+.cavity-scene {
+  height: 100% !important;
+  min-height: 330px !important;
+}
+
+/* Bottom Summary remains below workspace as a normal row. */
+.parameter-widget-grid {
+  position: relative !important;
+  z-index: 4 !important;
+  height: 66px !important;
+  min-height: 66px !important;
+  max-height: 66px !important;
+  margin-top: 10px !important;
+  margin-bottom: 8px !important;
+  overflow: visible !important;
+}
+
+.mini-widget {
+  height: 58px !important;
+  min-height: 58px !important;
+  max-height: 58px !important;
+  overflow: hidden !important;
+  background: #ffffff !important;
+  opacity: 1 !important;
+}
+
+/* Footer stays after Summary, not before KPI. */
+.footer-bar {
+  position: relative !important;
+  z-index: 5 !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  margin-top: 0 !important;
+}
+
+/* At shorter vertical height, reduce workspace first; never reorder KPI/Summary. */
+@media (max-height: 780px) {
+  .workspace-grid {
+    height: calc(100vh - 295px) !important;
+    min-height: 380px !important;
+    max-height: calc(100vh - 295px) !important;
+  }
+
+  .parameter-widget-grid {
+    height: 62px !important;
+    min-height: 62px !important;
+    max-height: 62px !important;
+  }
+
+  .mini-widget {
+    height: 54px !important;
+    min-height: 54px !important;
+    max-height: 54px !important;
+  }
+}
+
+
+/* v67: uniform widget spacing and stable vertical rhythm */
+/* Keep original component order. Only spacing/margins are normalized. */
+:root {
+  --ui-gap-v67: 10px;
+  --ui-gap-small-v67: 8px;
+  --summary-h-v67: 62px;
+  --footer-h-v67: 42px;
+}
+
+/* Main content uses a consistent vertical rhythm. */
+.main-dashboard {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: var(--ui-gap-v67) !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+  padding: 12px 14px 0 !important;
+}
+
+/* Normalize navigation/header spacing. */
+.top-search-row,
+.search-row,
+.parameter-search-wrap {
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+.top-bar,
+.main-header,
+.workspace-header,
+.nav-card {
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+/* KPI row: even gap and no uneven bottom margin. */
+.kpi-grid {
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  gap: var(--ui-gap-v67) !important;
+  margin: 0 !important;
+  height: 60px !important;
+  min-height: 60px !important;
+  max-height: 60px !important;
+  flex: 0 0 auto !important;
+}
+
+.kpi-card {
+  height: 60px !important;
+  min-height: 60px !important;
+  max-height: 60px !important;
+  padding: 8px 10px !important;
+}
+
+/* Workspace: use remaining space between KPI and Summary with equal top/bottom gaps. */
+.workspace-grid {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px) !important;
+  gap: var(--ui-gap-v67) !important;
+  overflow: hidden !important;
+}
+
+.view-area,
+.right-rail {
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+.view-head {
+  height: 38px !important;
+  min-height: 38px !important;
+  margin: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.tab-panel.active {
+  height: calc(100% - 38px) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.cavity-scene {
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Right rail result card fills exactly its column. */
+.result-card {
+  height: 100% !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* Summary row: equal gap to workspace and footer; never overlaps. */
+.parameter-widget-grid {
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+  gap: var(--ui-gap-v67) !important;
+  height: var(--summary-h-v67) !important;
+  min-height: var(--summary-h-v67) !important;
+  max-height: var(--summary-h-v67) !important;
+  margin: 0 !important;
+  flex: 0 0 var(--summary-h-v67) !important;
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 4 !important;
+}
+
+.mini-widget {
+  height: 58px !important;
+  min-height: 58px !important;
+  max-height: 58px !important;
+  padding: 8px 10px !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Footer: same gap as widgets, no accidental overlap. */
+.footer-bar {
+  height: var(--footer-h-v67) !important;
+  min-height: var(--footer-h-v67) !important;
+  max-height: var(--footer-h-v67) !important;
+  margin: 0 !important;
+  flex: 0 0 var(--footer-h-v67) !important;
+  display: flex !important;
+  align-items: center !important;
+  overflow: visible !important;
+}
+
+/* Avoid old spacing overrides from earlier versions. */
+.workspace-grid + .parameter-widget-grid {
+  margin-top: 0 !important;
+}
+
+.parameter-widget-grid + .footer-bar {
+  margin-top: 0 !important;
+}
+
+/* Preserve fit at smaller widths by reducing columns only when necessary. */
+@media (max-width: 1450px) {
+  .kpi-grid {
+    grid-template-columns: repeat(7, minmax(120px, 1fr)) !important;
+  }
+
+  .parameter-widget-grid {
+    grid-template-columns: repeat(7, minmax(120px, 1fr)) !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  .kpi-grid {
+    grid-template-columns: repeat(4, minmax(130px, 1fr)) !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  .parameter-widget-grid {
+    grid-template-columns: repeat(4, minmax(130px, 1fr)) !important;
+    height: auto !important;
+    max-height: none !important;
+    flex-basis: auto !important;
+  }
+}
+
+/* At low vertical height, reduce card heights but keep equal gaps. */
+@media (max-height: 780px) {
+  .main-dashboard {
+    gap: 8px !important;
+    padding-top: 10px !important;
+  }
+
+  .kpi-grid {
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+  }
+
+  .kpi-card {
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+  }
+
+  .parameter-widget-grid {
+    --summary-h-v67: 58px;
+  }
+
+  .mini-widget {
+    height: 54px !important;
+    min-height: 54px !important;
+    max-height: 54px !important;
+  }
+
+  .footer-bar {
+    --footer-h-v67: 38px;
+  }
+}
+
+
+/* v68: Do not highlight the whole Overview/background area */
+/* Parameter changes should highlight values/cards only, not wash the entire Overview panel. */
+#mainViewArea.changed-panel,
+#mainViewArea.scenario-affected,
+.view-area.changed-panel,
+.view-area.scenario-affected,
+#panel-overview.changed-panel,
+#panel-overview.scenario-affected,
+.cavity-scene.changed-panel,
+.cavity-scene.scenario-affected,
+.tab-panel.changed-panel,
+.tab-panel.scenario-affected,
+.card.view-area.changed-panel,
+.card.view-area.scenario-affected {
+  background: #ffffff !important;
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: inherit !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+#mainViewArea.changed-panel::after,
+#mainViewArea.scenario-affected::after,
+.view-area.changed-panel::after,
+.view-area.scenario-affected::after,
+.cavity-scene.changed-panel::after,
+.cavity-scene.scenario-affected::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* The intended feedback remains light value/card highlight only. */
+.result-card dl > div.changed-panel,
+.kpi-card.changed-panel,
+.mini-widget.changed-panel,
+.annotation.label-impact,
+.annotation.changed-panel {
+  background: rgba(254, 240, 138, 0.28) !important;
+  outline: none !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* Overview annotation emphasis should be subtle and local, not panel-wide. */
+.annotation.label-impact,
+.annotation.changed-panel {
+  border-color: rgba(245, 158, 11, 0.38) !important;
+  background: rgba(254, 240, 138, 0.20) !important;
+}

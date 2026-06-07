@@ -2186,3 +2186,19 @@ flashLabelImpacts = function(inputId) {
   previousFlashLabelImpactsV62(inputId);
   scheduleLightHighlightClearV62();
 };
+
+
+/* v68: prevent whole Overview/card background highlight */
+function getChangedOutputContainerV61(el) {
+  if (!el) return null;
+  return el.closest(".kpi-card")
+      || el.closest(".mini-widget")
+      || el.closest(".result-card dl > div")
+      || el.closest(".derived-pill")
+      || el.closest(".annotation")
+      || el.closest(".power-node")
+      || el.closest(".flow-node")
+      || el.closest(".info-card")
+      || el.closest("tr")
+      || el.parentElement;
+}
