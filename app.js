@@ -68,7 +68,7 @@ let latest = {};
 let suppressChangeFlash = true;
 
 const outputIdsToWatch = [
-  "sideTotalLoss", "sideQe", "sideRfCheck", "sideFcav", "sideDeltaF",
+  "sideTotalLoss", "sideQe", "sideRfCheck", "rfFreq", "revFreq", "sideFcav", "sideDeltaF",
   "kpiTotalLoss", "kpiBeamLoss", "kpiPhase", "kpiVc", "kpiEacc", "kpiPg", "kpiPr",
   "resQ", "resCos", "resPhase", "resRQ", "resRsh", "resQ0", "resQL", "resBeta", "resBetaOpt",
   "resEacc", "resPc", "resPb", "resPg", "resPr", "resFcav", "resDeltaF", "resTuneSlope",
@@ -123,6 +123,39 @@ const inputLabelImpactTargets = {
   rfFreq: ["branch"],
   revFreq: ["branch"]
 };
+
+
+/* v69: Ring & Timing derived relation
+   f0 = c / C
+   fRF = h * f0
+   C and h are editable design inputs. f0 and fRF are calculated outputs.
+*/
+const SPEED_OF_LIGHT_M_PER_S = 299792458;
+
+function computeRevolutionFrequencyMHz(circumferenceM) {
+  return circumferenceM > 0 ? SPEED_OF_LIGHT_M_PER_S / circumferenceM / 1e6 : NaN;
+}
+
+function computeRfFrequencyMHz(harmonicNumber, revolutionFrequencyMHz) {
+  return Number.isFinite(harmonicNumber) && Number.isFinite(revolutionFrequencyMHz)
+    ? harmonicNumber * revolutionFrequencyMHz
+    : NaN;
+}
+
+function syncRingTimingDerivedFields() {
+  const circumference = getNumber("circumference");
+  const harmonic = getNumber("harmonic");
+  const derivedRevFreq = computeRevolutionFrequencyMHz(circumference);
+  const derivedRfFreq = computeRfFrequencyMHz(harmonic, derivedRevFreq);
+
+  const revEl = $("revFreq");
+  if (revEl && Number.isFinite(derivedRevFreq)) revEl.value = derivedRevFreq.toFixed(6);
+
+  const rfEl = $("rfFreq");
+  if (rfEl && Number.isFinite(derivedRfFreq)) rfEl.value = derivedRfFreq.toFixed(6);
+
+  return { derivedRevFreq, derivedRfFreq };
+}
 
 function getNumber(id) {
   const el = $(id);
@@ -285,10 +318,14 @@ function calculateWithHighlight() {
 }
 
 function calculate() {
+  syncRingTimingDerivedFields();
+
   const energy = getNumber("energy");
   const current = getNumber("current");
+  const circumference = getNumber("circumference");
   const harmonic = getNumber("harmonic");
-  const rfFreq = getNumber("rfFreq");
+  const revFreq = computeRevolutionFrequencyMHz(circumference);
+  const rfFreq = computeRfFrequencyMHz(harmonic, revFreq);
   const lossBending = getNumber("lossBending");
   const lossID = getNumber("lossID");
   const lossOther = getNumber("lossOther");
@@ -344,7 +381,7 @@ function calculate() {
   const freqSpecStatus = Number.isFinite(freqSpecAbsError) && freqSpecAbsError <= tunerSpecWindow ? "PASS" : "WARNING";
 
   latest = {
-    energy, current, harmonic, rfFreq, totalLossKeV, totalLossMeV, beamLossPower,
+    energy, current, circumference, harmonic, revFreq, rfFreq, totalLossKeV, totalLossMeV, beamLossPower,
     vPerCav, eacc, pcCalc, pbCalc, reflectedPower, couplerPower, sspaPower, ratedPower,
     margin, marginPct, overVoltage, cosPhi, phaseDeg, rq, rsh, q0, ql, qe, beta, betaOpt,
     energyGainRatio, pPerCav, lineLoss, homLoss, nCav, cavLength,
@@ -397,7 +434,7 @@ function updateText() {
 
   setText("sideTotalLoss", fmt(v.totalLossKeV, 2, "keV"));
   setText("sideQe", fmtSci(v.qe));
-  setText("sideRfCheck", fmt(v.harmonic * getNumber("revFreq"), 6, "MHz"));
+  setText("sideRfCheck", fmt(v.rfFreq, 6, "MHz"));
   setText("sideFcav", fmt(v.estimatedFcav, 6, "MHz"));
   setText("sideDeltaF", fmt(v.deltaF, 6, "MHz"));
 
@@ -2201,4 +2238,20 @@ function getChangedOutputContainerV61(el) {
       || el.closest(".info-card")
       || el.closest("tr")
       || el.parentElement;
+}
+
+
+/* v69: Ring timing impact target refinement */
+if (typeof inputImpactTargetsV61 !== "undefined") {
+  inputImpactTargetsV61.circumference = ["revFreq", "rfFreq", "sideRfCheck", "beamRfCheck", "resDeltaF", "resDetuneEstimate", "resFreqSpec", "widgetDetune", "annoDetune", "sideDeltaF", "panelDeltaF", "detuneValue"];
+  inputImpactTargetsV61.harmonic = ["rfFreq", "sideRfCheck", "beamRfCheck", "resDeltaF", "resDetuneEstimate", "resFreqSpec", "widgetDetune", "annoDetune", "sideDeltaF", "panelDeltaF", "detuneValue"];
+  inputImpactTargetsV61.revFreq = ["rfFreq", "sideRfCheck", "beamRfCheck", "resDeltaF", "resDetuneEstimate", "resFreqSpec"];
+  inputImpactTargetsV61.rfFreq = ["resDeltaF", "resDetuneEstimate", "resFreqSpec", "widgetDetune", "annoDetune", "sideDeltaF", "panelDeltaF", "detuneValue"];
+}
+
+if (typeof inputLabelImpactTargetsV61 !== "undefined") {
+  inputLabelImpactTargetsV61.circumference = ["branch", "tuner"];
+  inputLabelImpactTargetsV61.harmonic = ["branch", "tuner"];
+  inputLabelImpactTargetsV61.revFreq = ["branch", "tuner"];
+  inputLabelImpactTargetsV61.rfFreq = ["tuner"];
 }

@@ -6361,3 +6361,17 @@ body {
   border-color: rgba(245, 158, 11, 0.38) !important;
   background: rgba(254, 240, 138, 0.20) !important;
 }
+
+
+/* v69: calculated Ring & Timing fields */
+#rfFreq[readonly],
+#revFreq[readonly] {
+  background: rgba(219, 234, 254, 0.18) !important;
+  color: #dbeafe !important;
+  cursor: not-allowed !important;
+}
+
+#rfFreq[readonly]:focus,
+#revFreq[readonly]:focus {
+  outline-color: rgba(96, 165, 250, 0.45) !important;
+}
