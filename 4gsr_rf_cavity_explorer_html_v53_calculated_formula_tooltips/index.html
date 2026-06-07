@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4GSR RF Cavity Explorer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="left-sidebar">
+      <div class="sidebar-content-scroll">
+      <div class="brand">
+        <div class="brand-icon">↗</div>
+        <div>
+          <h1>4GSR RF Cavity Explorer</h1>
+          <p>Grouped HTML Training Workspace</p>
+        </div>
+      </div>
+
+      <div class="sidebar-section auto-row">
+        <span>Input Parameters <small id="autoModeText">Auto Update ON</small></span>
+        <button type="button" id="toggleAllGroups" class="group-toggle-btn">Settings</button>
+        <label class="switch" title="ON: 입력 즉시 반영 / OFF: Apply Changes 후 반영">
+          <input id="autoUpdate" type="checkbox" checked data-impact="Enable: 입력 즉시 계산 결과 반영. Disable: 입력값은 바뀌지만 Apply Changes를 눌러야 결과 반영." />
+          <span></span>
+        </label>
+      </div>
+
+      <div class="input-group" data-search-group="beam energy current ib">
+        <h3>Beam Parameters</h3>
+        <div class="group-body">
+        <label>Beam Energy, E<sub>b</sub> <em>GeV</em>
+          <input id="energy" type="number" value="4.0" step="0.1" data-impact="Energy Gain Ratio에 영향. 현재 RF power budget에는 직접 영향이 작습니다.">
+        </label>
+        <label>Beam Current, I<sub>b</sub> <em>mA</em>
+          <input id="current" type="number" value="400" step="10" data-impact="Total Beam Loss Power, Beam Power Pb, Forward Power Pg, HPRF Margin에 영향.">
+        </label>
+      
+        </div>
+      </div><div class="input-group" data-search-group="ring timing circumference harmonic rf frequency revolution f0">
+        <h3>Ring & Timing</h3>
+        <div class="group-body">
+        <label>Circumference, C <em>m</em>
+          <input id="circumference" type="number" value="799.29698" step="0.00001" data-impact="Revolution frequency 검산 및 RF timing 구조에 영향.">
+        </label>
+        <label>Harmonic Number, h
+          <input id="harmonic" type="number" value="1332" step="1" data-impact="RF Frequency = h × f0 검산값에 영향.">
+        </label>
+        <label>RF Frequency, f<sub>r</sub> <em>MHz</em>
+          <input id="rfFreq" type="number" value="499.593469" step="0.000001" data-impact="RF period, Δf, Detune estimate에 영향.">
+        </label>
+        <div class="derived-pill">h × f<sub>0</sub> check: <strong id="sideRfCheck">-</strong></div>
+        <label>Revolution Frequency, f<sub>0</sub> <em>MHz</em>
+          <input id="revFreq" type="number" value="0.375070" step="0.000001" data-impact="RF Frequency = h × f0 검산값에 영향.">
+        </label>
+      
+        </div>
+      </div><div class="input-group" data-search-group="energy loss bending id other total">
+        <h3>Energy Loss / Turn</h3>
+        <div class="group-body">
+        <label>Bending Loss <em>keV</em>
+          <input id="lossBending" type="number" value="1097.65" step="0.01" data-impact="Total Energy Loss, Beam Loss Power, Synchronous Phase, Pb, Pg에 영향.">
+        </label>
+        <label>ID Loss <em>keV</em>
+          <input id="lossID" type="number" value="720" step="0.01" data-impact="Total Energy Loss, Beam Loss Power, Synchronous Phase, Pb, Pg에 영향.">
+        </label>
+        <label>Other Loss <em>keV</em>
+          <input id="lossOther" type="number" value="60" step="0.01" data-impact="Total Energy Loss, Beam Loss Power, Synchronous Phase, Pb, Pg에 영향.">
+        </label>
+        <div class="derived-pill">Total Energy Loss: <strong id="sideTotalLoss">-</strong></div>
+      
+        </div>
+      </div><div class="input-group" data-search-group="rf voltage total voltage vacc">
+        <h3>RF Voltage</h3>
+        <div class="group-body">
+        <label>Total Voltage, V<sub>acc</sub> <em>MV</em>
+          <input id="vTotal" type="number" value="3.5" step="0.01" data-impact="q, φs, Voltage/Cavity, Eacc, Pc, βopt에 영향.">
+        </label>
+      
+        </div>
+      </div><div class="input-group" data-search-group="cavity number ncav r/q q0 rsh length eacc pc">
+        <h3>Cavity Configuration</h3>
+        <div class="group-body">
+        <label># of Cavities
+          <input id="nCav" type="number" value="10" step="1" min="1" data-impact="Voltage/Cavity, Eacc, Pc, Pb, Pg, 기준표 행 강조에 영향.">
+        </label>
+        <label>R / Q <em>Ω</em>
+          <input id="rq" type="number" value="117.24" step="0.01" data-impact="R/Q 표시와 Cavity Branch 라벨에 영향.">
+        </label>
+        <label>Q<sub>0</sub>
+          <input id="q0" type="number" value="29000" step="100" data-impact="Qe, QL에 영향.">
+        </label>
+        <label>Shunt Impedance, R<sub>sh</sub> <em>MΩ</em>
+          <input id="rsh" type="number" value="3.4" step="0.01" data-impact="Dissipated Power Pc, βopt, Forward Power Pg에 영향.">
+        </label>
+        <label>Cavity Length, l<sub>c</sub> <em>m</em>
+          <input id="cavLength" type="number" value="0.3000364062" step="0.001" data-impact="Eacc / cavity에 영향.">
+        </label>
+      
+        </div>
+      </div><div class="input-group" data-search-group="coupling beta tuner qe ql">
+        <h3>Coupling / Tuner</h3>
+        <div class="group-body">
+        <label>Coupling Beta, β
+          <input id="beta" type="number" value="4.5" step="0.1" data-impact="Qe, QL, βopt 비교, coupling 상태에 영향.">
+        </label>
+        <div class="derived-pill">External Q, Q<sub>e</sub>: <strong id="sideQe">-</strong></div>
+      
+        </div>
+      </div><div class="input-group" data-search-group="tuner position plunger fcav delta detune frequency spec">
+        <h3>Tuner Mapping</h3>
+        <div class="group-body">
+        <label>Tuner Position <em>mm</em>
+          <input id="tunerPos" type="number" value="10.00" step="0.1" data-impact="CAD trend 기반 f_cav, Δf, Detune Estimate, Q0 trend에 영향.">
+        </label>
+        <label>Reference Position <em>mm</em>
+          <input id="tunerRefPosition" type="number" value="10.00" step="0.1" data-impact="RF Test 기준점. 기본값 10 mm에서 foper=499.59 MHz로 정규화합니다.">
+        </label>
+        <label>Reference Frequency <em>MHz</em>
+          <input id="tunerRefFreq" type="number" value="499.59" step="0.001" data-impact="RF Test 기준 운전 주파수. f_cav 추정 기준점과 spec 판정에 영향.">
+        </label>
+        <label>Spec Window <em>±MHz</em>
+          <input id="tunerSpecWindow" type="number" value="0.25" step="0.01" data-impact="운전 주파수 PASS/WARNING 판정 범위에 영향.">
+        </label>
+        <div class="derived-pill">Mapping Source: <strong>CAD trend normalized to RF Test</strong></div>
+        <div class="derived-pill">Estimated f<sub>cav</sub>: <strong id="sideFcav">-</strong></div>
+        <div class="derived-pill">Δf = f<sub>RF</sub> - f<sub>cav</sub>: <strong id="sideDeltaF">-</strong></div>
+      
+        </div>
+      </div><div class="input-group" data-search-group="hprf line loss hom sspa margin">
+        <h3>HPRF & Losses</h3>
+        <div class="group-body">
+        <label>Transmission Line Loss <em>kW</em>
+          <input id="lineLoss" type="number" value="10.0" step="0.01" data-impact="Required SSPA, HPRF Margin에 영향.">
+        </label>
+        <label>HOM Absorber Loss <em>kW</em>
+          <input id="homLoss" type="number" value="5.0" step="0.01" data-impact="Required Coupler Power, Required SSPA, HPRF Margin에 영향.">
+        </label>
+        <label>SSPA Operation Point <em>%</em>
+          <input id="opPoint" type="number" value="73" step="1" data-impact="Rated HPRF 및 Available Margin에 영향.">
+        </label>
+      
+        </div>
+      </div><div class="input-group" data-search-group="scenario nc8 nc9 nc10 nc11 nc12 custom">
+        <h3>Scenario Presets</h3>
+        <div class="group-body">
+        <div class="scenario-buttons">
+          <button type="button" class="scenario-btn" data-cav="8">NC-8</button>
+          <button type="button" class="scenario-btn" data-cav="9">NC-9</button>
+          <button type="button" class="scenario-btn" data-cav="10">NC-10</button>
+          <button type="button" class="scenario-btn" data-cav="11">NC-11</button>
+          <button type="button" class="scenario-btn" data-cav="12">NC-12</button>
+          <button type="button" class="scenario-btn custom" data-cav="custom">CUSTOM</button>
+        </div>
+        <div id="pendingBadge" class="pending-badge">변경 대기: Apply Changes를 누르면 결과에 반영됩니다.</div>
+        <div class="button-row">
+          <button type="button" id="resetBtn" class="secondary-btn">Reset</button>
+          <button type="button" id="applyBtn" class="primary-btn">Apply Changes</button>
+        </div>
+      
+        </div>
+      </div><div class="system-status">
+        <h3>System Status</h3>
+        <p><span></span> HTML Simulator Ready</p>
+        <p><span></span> Dataset: 4GSR NC Cavity</p>
+        <p><span></span> Update: Live / Manual</p>
+      </div>
+    
+      </div>
+      <div class="sidebar-scrollbar" aria-hidden="true"><div class="sidebar-scrollbar-thumb"></div></div>
+    </aside>
+
+    <main class="main-dashboard">
+      <section class="search-row">
+        <button type="button" id="mobileParamToggle" class="mobile-param-toggle">Parameters</button>
+        <div class="parameter-search" role="search" aria-label="Parameter search">
+          <span class="search-icon">⌕</span>
+          <input id="parameterSearch" type="search" placeholder="Parameter search" autocomplete="off">
+          <button type="button" id="parameterSearchBtn" aria-label="Search parameter">↵</button>
+          <div id="searchSuggestions" class="search-suggestions"></div>
+          <div id="searchStatus" class="search-status"></div>
+        </div>
+      </section>
+      <header class="top-nav">
+        <nav>
+          <button type="button" class="tab active" data-tab="overview" data-guide="3D View와 핵심 계산 결과를 한 화면에서 확인합니다.">Overview</button>
+          <button type="button" class="tab" data-tab="beam" data-guide="Beam energy, current, RF frequency, revolution timing과 beam power 변화를 확인합니다.">Beam & Ring</button>
+          <button type="button" class="tab" data-tab="cavity" data-guide="Cavity 수, Vc, Eacc, Pc, Rsh 등 cavity load 변화를 확인합니다.">Cavity</button>
+          <button type="button" class="tab" data-tab="coupling" data-guide="Q0, Qe, QL, β, βopt 관계와 coupling 민감도를 확인합니다.">Coupling & Q</button>
+          <button type="button" class="tab" data-tab="power" data-guide="SSPA → Line → Coupler → Cavity → Beam RF power flow를 확인합니다.">Power</button>
+          <button type="button" class="tab" data-tab="detune" data-guide="Tuner position, f_cav, Δf, detune estimate와 plunger tuning reference를 확인합니다.">Detune</button>
+          <button type="button" class="tab" data-tab="hprf" data-guide="Required SSPA, rated HPRF, operation point, available margin을 확인합니다.">HPRF & Margin</button>
+          <button type="button" class="tab" data-tab="diagnostics" data-guide="NC-8~NC-12 기준 RF power table을 확인합니다.">NC Power Table</button>
+          <button type="button" class="tab" data-tab="effect" data-guide="입력 파라미터가 결과값과 운전 판단으로 연결되는 흐름을 확인합니다.">Effect Map</button>
+        </nav>
+        <div class="scenario-select">
+          <span>Scenario</span>
+          <select id="scenarioSelect">
+            <option value="8">NC-8</option>
+            <option value="9">NC-9</option>
+            <option value="10" selected>NC-10 Baseline</option>
+            <option value="11">NC-11</option>
+            <option value="12">NC-12</option>
+          </select>
+        </div>
+      </header>
+
+      <section class="kpi-grid">
+        <article class="kpi-card"><span>Total Energy Loss</span><strong id="kpiTotalLoss">-</strong><small>MeV / turn</small></article>
+        <article class="kpi-card"><span>Total Beam Loss Power</span><strong id="kpiBeamLoss">-</strong><small>kW</small></article>
+        <article class="kpi-card"><span>Synchronous Phase</span><strong id="kpiPhase">-</strong><small>acos(U / Vacc)</small></article>
+        <article class="kpi-card"><span>Voltage / Cavity</span><strong id="kpiVc">-</strong><small>MV</small></article>
+        <article class="kpi-card"><span>Eacc / Cavity</span><strong id="kpiEacc">-</strong><small>MV/m</small></article>
+        <article class="kpi-card"><span>Forward Power</span><strong id="kpiPg">-</strong><small>kW</small></article>
+        <article class="kpi-card"><span>Reflected Power</span><strong id="kpiPr">-</strong><small>kW</small></article>
+      </section>
+
+      <section class="workspace-grid">
+        <section class="view-area card" id="mainViewArea">
+          <div class="view-head">
+            <h2 id="viewTitle">Overview</h2>
+            <p id="viewSubtitle">3D View와 핵심 원인-결과 흐름을 한 화면에서 확인합니다.</p>
+          </div>
+
+          <div class="tab-panel active" id="panel-overview">
+            <div class="cavity-scene mode-3d image-mode-label">
+              <div id="modeBadge" class="mode-badge">3D View: Cavity render with component labels</div>
+              <img src="assets/cavity.png" alt="4GSR NC Cavity render" class="cavity-img" draggable="false">
+              <div class="annotation anno-tuner" data-label-area="tuner"><b>1 Tuner Assembly</b><span>Resonance tuning / detune reference</span><em>f<sub>cav</sub>: <strong id="annoFcav">-</strong></em><em>Detune est.: <strong id="annoDetune">-</strong></em></div>
+              <div class="annotation anno-branch" data-label-area="branch"><b>2 Cavity Branch</b><span>Coaxial branch couples RF power</span><em>R / Q: <strong id="annoRQ">117.24 Ω</strong></em></div>
+              <div class="annotation anno-frame" data-label-area="frame"><b>3 Fixed Support Girder</b><span>Rigid support for alignment stability</span></div>
+              <div class="annotation anno-body" data-label-area="body"><b>4 Main Cavity Body</b><span>N.C. cavity stores RF energy</span><em>Rsh: <strong id="annoRsh">3.40 MΩ</strong></em></div>
+              <div class="annotation anno-coupler" data-label-area="coupler"><b>5 Input Coupler</b><span>Injects RF power and monitors reflection</span><em>Qe: <strong id="annoQe">-</strong></em></div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-beam">
+            <div class="panel-grid">
+              <div class="info-card"><h3>Beam / Ring Basis</h3><p>Total energy loss determines how much RF power must be restored each turn.</p><dl><div><dt>fRF check</dt><dd id="beamRfCheck">-</dd></div><div><dt>Beam Loss Power</dt><dd id="beamLossPanel">-</dd></div></dl></div>
+              <div class="info-card wide"><h3>Beam Current Sweep</h3><svg id="beamSweepChart" viewBox="0 0 520 260"></svg></div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-cavity">
+            <div class="panel-grid">
+              <div class="info-card"><h3>Cavity Configuration</h3><dl><div><dt>Voltage / Cavity</dt><dd id="panelVc">-</dd></div><div><dt>Eacc</dt><dd id="panelEacc">-</dd></div><div><dt>Pc</dt><dd id="panelPc">-</dd></div></dl></div>
+              <div class="info-card wide"><h3>Cavity Count Sweep</h3><select id="chartMetric"><option value="coupler">Required Coupler Power</option><option value="hprf">HPRF Output</option><option value="rated">Rated HPRF</option><option value="pc">Dissipated Power</option><option value="pb">Beam Power</option></select><svg id="cavitySweepChart" viewBox="0 0 520 260"></svg></div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-coupling">
+            <div class="panel-grid">
+              <div class="info-card"><h3>Coupling & Q</h3><dl><div><dt>Qe = Q0 / β</dt><dd id="panelQe">-</dd></div><div><dt>QL = Q0 / (1+β)</dt><dd id="panelQL">-</dd></div><div><dt>βopt</dt><dd id="panelBetaOpt">-</dd></div></dl></div>
+              <div class="info-card"><h3>Coupling Meaning</h3><p>Beam loading changes optimum coupling. β and QL affect detune sensitivity and reflected power condition.</p></div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-power">
+            <div class="power-flow-wide">
+              <h3>RF Power Flow</h3>
+              <div class="power-flow-mainline">
+                <div class="node">SSPA<br><strong id="flowSSPA">-</strong></div>
+                <span>→</span>
+                <div class="node">Line Loss<br><strong id="flowLine">-</strong></div>
+                <span>→</span>
+                <div class="node">Coupler<br><strong id="flowCoupler">-</strong></div>
+                <span>→</span>
+                <div class="node">Cavity<br><strong id="flowCavity">-</strong></div>
+                <span>→</span>
+                <div class="node">Beam<br><strong id="flowBeam">-</strong></div>
+              </div>
+              <div class="power-flow-split">
+                <div>Dissipated<br><strong id="flowPc">-</strong></div>
+                <div>Reflected<br><strong id="flowPr">-</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-detune">
+            <div class="panel-grid">
+              <div class="info-card"><h3>Tuner Mapping</h3><dl><div><dt>Estimated f<sub>cav</sub></dt><dd id="panelFcav">-</dd></div><div><dt>Δf</dt><dd id="panelDeltaF">-</dd></div><div><dt>df/dx</dt><dd id="panelSlope">-</dd></div><div><dt>CAD Q0 Trend</dt><dd id="panelCadQ0">-</dd></div></dl></div>
+              <div class="info-card gauge-card">
+                <h3>Detune Estimate</h3>
+                <div class="detune-semi-gauge">
+                  <svg class="detune-semi-svg" viewBox="0 0 1000 620" role="img" aria-label="Detune Estimate Gauge">
+                    <defs>
+                      <linearGradient id="detuneArcGradient" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%" stop-color="#3b82f6"></stop>
+                        <stop offset="45%" stop-color="#bfdbfe"></stop>
+                        <stop offset="55%" stop-color="#fee2e2"></stop>
+                        <stop offset="100%" stop-color="#ef4444"></stop>
+                      </linearGradient>
+                      <radialGradient id="detuneFillGradient" cx="50%" cy="92%" r="85%">
+                        <stop offset="0%" stop-color="rgba(255,255,255,0.96)"></stop>
+                        <stop offset="54%" stop-color="rgba(255,255,255,0.90)"></stop>
+                        <stop offset="100%" stop-color="rgba(59,130,246,0.18)"></stop>
+                      </radialGradient>
+                      <filter id="semiNeedleShadow" x="-60%" y="-60%" width="220%" height="220%">
+                        <feDropShadow dx="10" dy="10" stdDeviation="7" flood-color="rgba(0,0,0,0.26)"></feDropShadow>
+                      </filter>
+                    </defs>
+
+                    <line class="detune-title-rule top" x1="70" y1="78" x2="930" y2="78"></line>
+
+                    <path class="detune-semi-fill" d="M180 470 A320 320 0 0 1 820 470 L500 470 Z"></path>
+                    <path class="detune-semi-arc" d="M180 470 A320 320 0 0 1 820 470"></path>
+
+                    <g class="detune-major-ticks">
+                      <line x1="180" y1="470" x2="218" y2="470"></line>
+                      <line x1="223" y1="310" x2="258" y2="330"></line>
+                      <line x1="340" y1="193" x2="360" y2="228"></line>
+                      <line x1="500" y1="150" x2="500" y2="192"></line>
+                      <line x1="660" y1="193" x2="640" y2="228"></line>
+                      <line x1="777" y1="310" x2="742" y2="330"></line>
+                      <line x1="820" y1="470" x2="782" y2="470"></line>
+                    </g>
+
+                    <g class="detune-minor-ticks">
+                      <line x1="248" y1="396" x2="277" y2="407"></line>
+                      <line x1="286" y1="256" x2="311" y2="278"></line>
+                      <line x1="420" y1="160" x2="428" y2="192"></line>
+                      <line x1="580" y1="160" x2="572" y2="192"></line>
+                      <line x1="714" y1="256" x2="689" y2="278"></line>
+                      <line x1="752" y1="396" x2="723" y2="407"></line>
+                    </g>
+
+                    <g class="detune-angle-labels">
+                      <text x="142" y="474">-90°</text>
+                      <text x="138" y="306">-60°</text>
+                      <text x="300" y="184">-30°</text>
+                      <text x="500" y="123">0°</text>
+                      <text x="700" y="184">+30°</text>
+                      <text x="862" y="306">+60°</text>
+                      <text x="858" y="474">+90°</text>
+                    </g>
+
+                    <g id="detuneNeedleGroup" transform="rotate(0 500 470)">
+                      <path id="detuneNeedle" class="detune-semi-needle detune-visible-needle" d="M489 470 L489 238 Q489 224 500 224 Q511 224 511 238 L511 470 Z"></path>
+                    </g>
+                    <circle class="detune-semi-pivot" cx="500" cy="470" r="42"></circle>
+
+                    <text class="detune-minus-title" x="112" y="568">− Angle°</text>
+                    <text class="detune-plus-title" x="888" y="568">+ Angle°</text>
+
+                    <foreignObject x="360" y="514" width="280" height="72">
+                      <div xmlns="http://www.w3.org/1999/xhtml" class="detune-digital-box">
+                        <span id="detuneCurrentAngleLabel">-</span>
+                      </div>
+                    </foreignObject>
+                    <text class="detune-digital-caption" x="500" y="606">DETUNE</text>
+                  </svg>
+                </div>
+                <strong id="detuneValue" class="detune-hidden-value">-</strong>
+              </div>
+            </div>
+
+            <div class="detune-reference-card">
+              <h3>Tuner Plunger Tuning Range Reference</h3>
+              <p>RI measurement/CAD trend example for 100 mm plunger tuner: vacuum frequency at 23°C and unloaded Q versus plunger penetration.</p>
+              <img src="assets/tuner_plunger_range_reference.png" alt="Tuner plunger tuning range reference graph">
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-hprf">
+            <div class="panel-grid">
+              <div class="info-card"><h3>HPRF Margin</h3><dl><div><dt>Required @ Coupler</dt><dd id="marginCoupler">-</dd></div><div><dt>Required @ SSPA</dt><dd id="marginSSPA">-</dd></div><div><dt>Rated HPRF</dt><dd id="marginRated">-</dd></div><div><dt>Available Margin</dt><dd id="marginAvailable">-</dd></div></dl></div>
+            </div>
+          </div>
+
+          <div class="tab-panel" id="panel-diagnostics">
+            <div class="table-wrap"><table class="budget-table"><thead><tr><th># Cavities</th><th>Dissipated Power [kW]</th><th>Beam Power [kW]</th><th>HOM Loss [kW]</th><th>Required Coupler [kW]</th><th>HPRF Output [kW]</th><th>Reflected Power [kW]</th><th>Rated HPRF [kW]</th></tr></thead><tbody><tr data-cav="8"><td>8</td><td>28.15</td><td>93.88</td><td>5.00</td><td>127.07</td><td>137.07</td><td>0.042</td><td>187.8</td></tr><tr data-cav="9"><td>9</td><td>22.24</td><td>83.45</td><td>5.00</td><td>110.77</td><td>120.77</td><td>0.079</td><td>165.4</td></tr><tr data-cav="10"><td>10</td><td>18.01</td><td>75.11</td><td>5.00</td><td>98.57</td><td>108.57</td><td>0.448</td><td>148.7</td></tr><tr data-cav="11"><td>11</td><td>14.89</td><td>68.28</td><td>5.00</td><td>89.14</td><td>99.14</td><td>0.976</td><td>135.8</td></tr><tr data-cav="12"><td>12</td><td>12.51</td><td>62.59</td><td>5.00</td><td>80.73</td><td>90.73</td><td>0.629</td><td>124.3</td></tr></tbody></table></div>
+          </div>
+        
+
+          <div class="tab-panel" id="panel-effect">
+            <div class="effect-map-panel">
+              <section class="effect-flow-card">
+                <h3>Effect Map</h3>
+                <p>입력 파라미터가 어떤 계산 결과와 RF 운전 판단으로 연결되는지 한눈에 보는 흐름표입니다.</p>
+                <div class="effect-grid">
+                  <div class="effect-row"><span class="effect-source">Beam Current</span><b>→</b><span>Beam Power</span><b>→</b><span>Forward Power</span><b>→</b><span>HPRF Margin</span></div>
+                  <div class="effect-row"><span class="effect-source">Total Voltage</span><b>→</b><span>Voltage / Cavity</span><b>→</b><span>Eacc</span><b>→</b><span>Dissipated Power</span></div>
+                  <div class="effect-row"><span class="effect-source"># Cavities</span><b>→</b><span>Vc, Pc, Pb</span><b>→</b><span>Required Coupler</span><b>→</b><span>NC Power Table</span></div>
+                  <div class="effect-row"><span class="effect-source">Tuner Position</span><b>→</b><span>f_cav</span><b>→</b><span>Δf</span><b>→</b><span>Detune Estimate</span></div>
+                  <div class="effect-row"><span class="effect-source">Coupling Beta</span><b>→</b><span>Qe</span><b>→</b><span>QL</span><b>→</b><span>Detune Sensitivity</span></div>
+                  <div class="effect-row"><span class="effect-source">Line / HOM Loss</span><b>→</b><span>Required SSPA</span><b>→</b><span>Rated HPRF</span><b>→</b><span>Available Margin</span></div>
+                </div>
+              </section>
+
+              <section class="effect-table-card">
+                <h3>Flow Table</h3>
+                <table class="flow-table">
+                  <thead>
+                    <tr>
+                      <th>Group</th>
+                      <th>Main Input</th>
+                      <th>Direct Result</th>
+                      <th>Final Check</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>Beam</td><td>Ib, U loss</td><td>Pb, Pg</td><td>RF power demand</td></tr>
+                    <tr><td>Cavity</td><td>Vacc, Ncav, Rsh</td><td>Vc, Eacc, Pc</td><td>per-cavity load</td></tr>
+                    <tr><td>Coupling</td><td>β, Q0</td><td>Qe, QL, βopt</td><td>reflection tendency</td></tr>
+                    <tr><td>Tuner</td><td>Position, f_ref</td><td>f_cav, Δf</td><td>detune estimate</td></tr>
+                    <tr><td>HPRF</td><td>Line/HOM loss, op point</td><td>SSPA output, rated HPRF</td><td>available margin</td></tr>
+                  </tbody>
+                </table>
+              </section>
+            </div>
+          </div>
+
+        
+</section>
+<aside class="right-rail">
+          <section class="card result-card">
+            <h2>Calculated Results</h2>
+            <dl>
+              <div><dt>Over-voltage Factor (q)</dt><dd id="resQ">-</dd></div>
+              <div><dt>cos(φs)</dt><dd id="resCos">-</dd></div>
+              <div><dt>Synchronous Phase (φs)</dt><dd id="resPhase">-</dd></div>
+              <div><dt>R / Q</dt><dd id="resRQ">-</dd></div>
+              <div><dt>Rsh</dt><dd id="resRsh">-</dd></div>
+              <div><dt>Q0</dt><dd id="resQ0">-</dd></div>
+              <div><dt>Loaded Q (QL)</dt><dd id="resQL">-</dd></div>
+              <div><dt>Coupling Beta (β)</dt><dd id="resBeta">-</dd></div>
+              <div><dt>Optimum Beta (βopt)</dt><dd id="resBetaOpt">-</dd></div>
+              <div><dt>Eacc / cavity</dt><dd id="resEacc">-</dd></div>
+              <div><dt>Dissipated Power (Pc)</dt><dd id="resPc">-</dd></div>
+              <div><dt>Beam Power (Pb)</dt><dd id="resPb">-</dd></div>
+              <div><dt>Forward Power (Pg)</dt><dd id="resPg">-</dd></div>
+              <div><dt>Reflected Power (Pr)</dt><dd id="resPr">-</dd></div>
+              <div><dt>Estimated f<sub>cav</sub></dt><dd id="resFcav">-</dd></div>
+              <div><dt>Frequency Error Δf</dt><dd id="resDeltaF">-</dd></div>
+              <div><dt>Local df/dx</dt><dd id="resTuneSlope">-</dd></div>
+              <div><dt>CAD Q0 Trend</dt><dd id="resCadQ0">-</dd></div>
+              <div><dt>Detune Estimate</dt><dd id="resDetuneEstimate">-</dd></div>
+              <div><dt>Frequency Spec</dt><dd id="resFreqSpec">-</dd></div>
+              <div><dt>Energy Gain Ratio</dt><dd id="resGain">-</dd></div>
+            </dl>
+          </section>
+</aside>
+      </section>
+
+      <section class="parameter-widget-grid">
+        <article class="mini-widget"><b>Energy Loss</b><strong id="widgetEnergy">-</strong><span>U / turn</span></article>
+        <article class="mini-widget"><b>Beam Power</b><strong id="widgetBeam">-</strong><span>Ploss</span></article>
+        <article class="mini-widget"><b>Cavity Voltage</b><strong id="widgetVc">-</strong><span>Vc</span></article>
+        <article class="mini-widget"><b>Dissipated</b><strong id="widgetPc">-</strong><span>Pc</span></article>
+        <article class="mini-widget"><b>Forward</b><strong id="widgetPg">-</strong><span>Pg</span></article>
+        <article class="mini-widget"><b>Detune</b><strong id="widgetDetune">-</strong><span>estimate</span></article>
+        <article class="mini-widget"><b>HPRF Margin</b><strong id="widgetMargin">-</strong><span>available</span></article>
+      </section>
+
+      <footer class="footer-bar">
+        <span>● HTML Connected</span>
+        <span>Dataset: 4GSR NC Cavity</span>
+        <span>PV Prefix Preview: RF:4GSR:NC:</span>
+        <span id="footerTime">-</span>
+        <span class="version-badge">V.53</span>
+      </footer>
+    </main>
+  </div>
+
+  <div id="inputImpactTooltip" class="input-impact-tooltip" role="tooltip"></div>
+  <div id="hoverGuideTooltip" class="hover-guide-tooltip" role="tooltip"></div>
+  <div id="formulaTooltip" class="formula-tooltip" role="tooltip"></div>
+  <script src="app.js"></script>
+</body>
+</html>
