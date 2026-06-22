@@ -4,6 +4,8 @@ window.addEventListener("error", (event) => {
 
 const $ = (id) => document.getElementById(id);
 
+/* v70-formula-only: Excel power-budget formula correction. GUI layout/style unchanged. */
+
 const inputs = [
   "energy", "current", "circumference", "harmonic", "rfFreq", "revFreq",
   "lossBending", "lossID", "lossOther", "vTotal", "nCav",
@@ -43,7 +45,9 @@ const referenceByCav = {
   9:  { pc: 22.24, pb: 83.45, hom: 5.00, coupler: 110.77, hprf: 120.77, reflected: 0.079, rated: 165.4 },
   10: { pc: 18.01, pb: 75.11, hom: 5.00, coupler: 98.57,  hprf: 108.57, reflected: 0.448, rated: 148.7 },
   11: { pc: 14.89, pb: 68.28, hom: 5.00, coupler: 89.14,  hprf: 99.14,  reflected: 0.976, rated: 135.8 },
-  12: { pc: 12.51, pb: 62.59, hom: 5.00, coupler: 80.73,  hprf: 90.73,  reflected: 0.629, rated: 124.3 }
+  12: { pc: 12.51, pb: 62.59, hom: 5.00, coupler: 80.73,  hprf: 90.73,  reflected: 0.629, rated: 124.3 },
+  13: { pc: 10.65, pb: 57.77, hom: 5.00, coupler: 73.43,  hprf: 83.43,  reflected: 0.018, rated: 114.3 },
+  14: { pc: 9.19,  pb: 53.65, hom: 5.00, coupler: 67.84,  hprf: 77.84,  reflected: 0.001, rated: 106.6 }
 };
 
 const tunerCadTrend = [
@@ -353,9 +357,19 @@ function calculate() {
   const pcCalc = rsh > 0 ? (vPerCav * vPerCav) / (2 * rsh) * 1000 : NaN;
   const pbCalc = nCav > 0 ? beamLossPower / nCav : NaN;
 
-  const ref = nearestReference(nCav);
-  const reflectedPower = ref ? ref.reflected : Math.max(0, Math.abs(beta - 5) * 0.2);
-  const couplerPower = pcCalc + pbCalc + homLoss + reflectedPower;
+  // Formula corrected against 260609_4GSR RF power calculation NC cavity_woo.xlsm.
+  // Excel beam-current/detune table:
+  //   Pg = ((1 + beta) * Pc + Pb)^2 / (4 * beta * Pc)
+  //   Pr = Pg - Pb - Pc
+  // GUI "Required Coupler / Forward Power" includes HOM absorber loss:
+  //   Coupler Power = Pg + HOM Loss
+  const forwardPowerNoHom = (beta > 0 && pcCalc > 0)
+    ? Math.pow((1 + beta) * pcCalc + pbCalc, 2) / (4 * beta * pcCalc)
+    : NaN;
+  const reflectedPower = Number.isFinite(forwardPowerNoHom)
+    ? forwardPowerNoHom - pbCalc - pcCalc
+    : NaN;
+  const couplerPower = forwardPowerNoHom + homLoss;
   const sspaPower = couplerPower + lineLoss;
   const ratedPower = opPoint > 0 ? sspaPower / (opPoint / 100) : NaN;
   const margin = ratedPower - sspaPower;
@@ -382,7 +396,7 @@ function calculate() {
 
   latest = {
     energy, current, circumference, harmonic, revFreq, rfFreq, totalLossKeV, totalLossMeV, beamLossPower,
-    vPerCav, eacc, pcCalc, pbCalc, reflectedPower, couplerPower, sspaPower, ratedPower,
+    vPerCav, eacc, pcCalc, pbCalc, forwardPowerNoHom, reflectedPower, couplerPower, sspaPower, ratedPower,
     margin, marginPct, overVoltage, cosPhi, phaseDeg, rq, rsh, q0, ql, qe, beta, betaOpt,
     energyGainRatio, pPerCav, lineLoss, homLoss, nCav, cavLength,
     tunerPos, tunerRefPosition, tunerRefFreq, tunerSpecWindow, estimatedFcav, deltaF,
@@ -488,12 +502,12 @@ function updateText() {
   setText("flowSSPA", fmt(v.sspaPower, 1, "kW"));
   setText("flowLine", fmt(v.lineLoss, 1, "kW"));
   setText("flowCoupler", fmt(v.couplerPower, 1, "kW"));
-  setText("flowCavity", fmt(v.couplerPower - v.homLoss, 1, "kW"));
+  setText("flowCavity", fmt(v.forwardPowerNoHom, 1, "kW"));
   setText("flowBeam", fmt(v.pbCalc, 1, "kW"));
   setText("flowPc", fmt(v.pcCalc, 1, "kW"));
   setText("flowPr", fmt(v.reflectedPower, 3, "kW"));
 
-  setText("beamRfCheck", fmt(v.harmonic * getNumber("revFreq"), 6, "MHz"));
+  setText("beamRfCheck", fmt(v.rfFreq, 6, "MHz"));
   setText("beamLossPanel", fmt(v.beamLossPower, 2, "kW"));
   setText("panelVc", fmt(v.vPerCav, 3, "MV"));
   setText("panelEacc", fmt(v.eacc, 3, "MV/m"));
@@ -586,7 +600,14 @@ function drawBeamSweepChart() {
   const currents = [0, 50, 100, 150, 200, 250, 300, 350, 400];
   const nCav = Math.max(1, latest.nCav || 10);
   const totalLossMeV = latest.totalLossMeV || 1.87765;
-  const ys = currents.map((i) => (totalLossMeV * i) / nCav + latest.pcCalc + latest.homLoss);
+  const pc = latest.pcCalc;
+  const beta = latest.beta;
+  const ys = currents.map((i) => {
+    const pb = (totalLossMeV * i) / nCav;
+    return (beta > 0 && pc > 0)
+      ? Math.pow((1 + beta) * pc + pb, 2) / (4 * beta * pc)
+      : NaN;
+  });
   drawLineChart(svg, currents, ys, "Beam Current Sweep: Pg estimate [kW]", "#2563eb", latest.current);
 }
 
@@ -1383,13 +1404,13 @@ const calculatedFormulaTooltips = {
   },
   resPg: {
     title: "Forward Power (Pg)",
-    formula: "Pg ≈ Pc + Pb + HOM loss + Pr",
-    detail: "교육용 power budget 근사식입니다. 실제 RF 운전에서는 coupling/detune/reflection 조건이 추가됩니다."
+    formula: "Pg = ((1+β)Pc + Pb)^2/(4βPc); Coupler = Pg + HOM",
+    detail: "엑셀 기준 forward power 공식으로 Pg를 계산하고, GUI의 Required Coupler/Forward 표시에는 HOM absorber loss를 더합니다."
   },
   resPr: {
     title: "Reflected Power (Pr)",
-    formula: "Pr = simplified reflection estimate",
-    detail: "현재 HTML에서는 coupling/detune 상태를 반영한 교육용 근사값으로 표시합니다."
+    formula: "Pr = Pg - Pb - Pc",
+    detail: "엑셀 Beam Current Detune Table 기준 reflected power 계산식입니다."
   },
   resFcav: {
     title: "Estimated f_cav",
